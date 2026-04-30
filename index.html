@@ -159,14 +159,20 @@
             position: sticky;
             top: 76px;
             z-index: 99;
-        }
-
-        .group-tabs {
             max-width: 1400px;
             margin: 0 auto;
             display: flex;
-            gap: 0;
+            align-items: center;
+            justify-content: space-between;
             padding: 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .group-tabs {
+            display: flex;
+            gap: 0;
+            flex-wrap: wrap;
+            flex: 1;
         }
 
         .group-tab {
@@ -568,6 +574,92 @@
             padding: 10px 20px;
         }
 
+        .bulk-add-section {
+            margin-bottom: 20px;
+        }
+
+        .bulk-add-container {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 2px dashed var(--success);
+        }
+
+        .bulk-add-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .bulk-add-header:hover {
+            opacity: 0.8;
+        }
+
+        .bulk-add-body {
+            display: none;
+        }
+
+        .bulk-add-body.active {
+            display: block;
+        }
+
+        .bulk-add-textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            direction: rtl;
+            margin-bottom: 10px;
+        }
+
+        .bulk-add-textarea:focus {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.15);
+        }
+
+        .bulk-add-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .bulk-add-hint {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .new-group-btn {
+            background: var(--success);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .new-group-btn:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 600px) {
             .add-student-container {
                 flex-wrap: wrap;
@@ -580,6 +672,9 @@
             }
             .add-icon {
                 display: none;
+            }
+            .bulk-add-actions {
+                flex-wrap: wrap;
             }
         }
 
@@ -999,6 +1094,7 @@
                 <span class="tab-count" id="count-a2">20</span>
             </button>
         </div>
+        <button class="new-group-btn" onclick="createNewGroup()">&#x2795; إنشاء قائمة جديدة</button>
     </div>
 
     <!-- Main Content -->
@@ -1050,6 +1146,29 @@
                 <span class="add-icon">&#x2795;</span>
                 <input type="text" class="add-student-input" id="newStudentInput" placeholder="أدخل اسم الطالب الجديد...">
                 <button class="btn btn-accent add-student-btn" onclick="addNewStudent()">إضافة طالب</button>
+            </div>
+        </div>
+
+        <!-- Bulk Add Students -->
+        <div class="bulk-add-section">
+            <div class="bulk-add-container">
+                <div class="bulk-add-header" onclick="toggleBulkAdd()">
+                    <span>&#x1F4CB;</span>
+                    <span>إضافة مجموعة طلاب دفعة واحدة (انسخ والصق)</span>
+                    <span id="bulkToggleIcon">&#x25BC;</span>
+                </div>
+                <div class="bulk-add-body" id="bulkAddBody">
+                    <textarea class="bulk-add-textarea" id="bulkStudentInput" placeholder="الصق أسماء الطلاب هنا...
+كل اسم في سطر جديد
+مثال:
+أحمد محمد علي
+فاطمة حسين
+علي كريم"></textarea>
+                    <div class="bulk-add-actions">
+                        <button class="btn btn-success" onclick="addBulkStudents()">&#x2795; إضافة الكل</button>
+                        <span class="bulk-add-hint">ضع كل اسم في سطر منفصل</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1310,7 +1429,7 @@
         // وظيفة تحديث أعداد التبويبات
         // =============================================
         function updateTabCounts() {
-            var groups = ['all', 'a1', 'a2'];
+            var groups = Object.keys(groupData);
             for (var g = 0; g < groups.length; g++) {
                 var key = groupData[groups[g]].storageKey;
                 var data = localStorage.getItem(key);
@@ -1320,7 +1439,8 @@
                 } else {
                     count = groupData[groups[g]].names.length;
                 }
-                document.getElementById('count-' + groups[g]).textContent = count;
+                var countEl = document.getElementById('count-' + groups[g]);
+                if (countEl) countEl.textContent = count;
             }
         }
 
@@ -1862,6 +1982,152 @@
         }
 
         // =============================================
+        // وظيفة إضافة مجموعة طلاب دفعة واحدة
+        // =============================================
+        function toggleBulkAdd() {
+            var body = document.getElementById('bulkAddBody');
+            var icon = document.getElementById('bulkToggleIcon');
+            if (body.classList.contains('active')) {
+                body.classList.remove('active');
+                icon.innerHTML = '&#x25BC;';
+            } else {
+                body.classList.add('active');
+                icon.innerHTML = '&#x25B2;';
+            }
+        }
+
+        function addBulkStudents() {
+            var textarea = document.getElementById('bulkStudentInput');
+            var text = textarea.value.trim();
+            if (!text) {
+                showToast("الرجاء لصق أسماء الطلاب", "warning");
+                return;
+            }
+            var lines = text.split('\n');
+            var names = [];
+            for (var i = 0; i < lines.length; i++) {
+                var name = lines[i].replace(/^[\d\u0660-\u0669]+[\.\-\s\)\u200F]*/g, '').trim();
+                if (name.length > 0) {
+                    names.push(name);
+                }
+            }
+            if (names.length === 0) {
+                showToast("لم يتم العثور على أسماء صالحة", "warning");
+                return;
+            }
+            var maxId = 0;
+            for (var i = 0; i < students.length; i++) {
+                if (students[i].id > maxId) maxId = students[i].id;
+            }
+            for (var i = 0; i < names.length; i++) {
+                students.push({
+                    id: maxId + 1 + i,
+                    name: names[i],
+                    absences: 0,
+                    plus: 0,
+                    todayAbsent: false,
+                    absenceDates: []
+                });
+            }
+            saveToLocalStorage(students);
+            textarea.value = '';
+            toggleBulkAdd();
+            renderAll();
+            updateTabCounts();
+            showToast("تم إضافة " + names.length + " طالب بنجاح", "success");
+        }
+
+        // =============================================
+        // وظيفة إنشاء قائمة/كروب جديد
+        // =============================================
+        function saveCustomGroups() {
+            var custom = {};
+            var keys = Object.keys(groupData);
+            for (var i = 0; i < keys.length; i++) {
+                if (keys[i] !== 'all' && keys[i] !== 'a1' && keys[i] !== 'a2') {
+                    custom[keys[i]] = {
+                        label: groupData[keys[i]].label,
+                        storageKey: groupData[keys[i]].storageKey
+                    };
+                }
+            }
+            localStorage.setItem('smartProfessorCustomGroups', JSON.stringify(custom));
+        }
+
+        function loadCustomGroups() {
+            var data = localStorage.getItem('smartProfessorCustomGroups');
+            if (data) {
+                var custom = JSON.parse(data);
+                var keys = Object.keys(custom);
+                for (var i = 0; i < keys.length; i++) {
+                    if (!groupData[keys[i]]) {
+                        groupData[keys[i]] = {
+                            label: custom[keys[i]].label,
+                            names: [],
+                            storageKey: custom[keys[i]].storageKey
+                        };
+                    }
+                }
+            }
+        }
+
+        function createNewGroup() {
+            var name = prompt("أدخل اسم القائمة الجديدة:");
+            if (!name || !name.trim()) return;
+            name = name.trim().toUpperCase();
+            var groupKey = 'custom_' + name.replace(/\s+/g, '_').toLowerCase();
+            if (groupData[groupKey]) {
+                showToast("هذه القائمة موجودة بالفعل", "warning");
+                return;
+            }
+            groupData[groupKey] = {
+                label: name,
+                names: [],
+                storageKey: 'smartProfessor_' + groupKey
+            };
+            saveCustomGroups();
+            renderGroupTabs();
+            switchGroup(groupKey);
+            showToast("تم إنشاء قائمة \"" + name + "\" بنجاح", "success");
+        }
+
+        function deleteGroup(groupKey) {
+            if (groupKey === 'all' || groupKey === 'a1' || groupKey === 'a2') {
+                showToast("لا يمكن حذف القوائم الأساسية", "warning");
+                return;
+            }
+            var label = groupData[groupKey].label;
+            if (!confirm('هل أنت متأكد من حذف قائمة "' + label + '"؟ سيتم حذف جميع البيانات.')) return;
+            localStorage.removeItem(groupData[groupKey].storageKey);
+            delete groupData[groupKey];
+            saveCustomGroups();
+            renderGroupTabs();
+            switchGroup('all');
+            showToast("تم حذف قائمة \"" + label + "\"", "warning");
+        }
+
+        function renderGroupTabs() {
+            var container = document.getElementById('groupTabs');
+            var html = '';
+            var icons = {all: '&#x1F4DA;', a1: '&#x1F4D8;', a2: '&#x1F4D7;'};
+            var defaultIcon = '&#x1F4D9;';
+            var keys = Object.keys(groupData);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var icon = icons[key] || defaultIcon;
+                var isActive = key === currentGroup ? ' active' : '';
+                html += '<button class="group-tab' + isActive + '" onclick="switchGroup(\'' + key + '\')" id="tab-' + key + '">';
+                html += icon + ' ' + groupData[key].label;
+                html += ' <span class="tab-count" id="count-' + key + '">0</span>';
+                if (key !== 'all' && key !== 'a1' && key !== 'a2') {
+                    html += ' <span onclick="event.stopPropagation(); deleteGroup(\'' + key + '\')" style="cursor:pointer;font-size:12px;color:#e74c3c;margin-right:4px;" title="حذف القائمة">&#x2716;</span>';
+                }
+                html += '</button>';
+            }
+            container.innerHTML = html;
+        }
+
+        // =============================================
         // إغلاق النوافذ عند الضغط خارجها
         // =============================================
         document.getElementById('reportModal').addEventListener('click', function(e) {
@@ -1879,16 +2145,11 @@
         // =============================================
         // التشغيل الأولي (Initial Render)
         // =============================================
+        loadCustomGroups();
         currentGroup = loadCurrentGroup();
         if (!groupData[currentGroup]) currentGroup = 'all';
 
-        // Activate correct tab
-        var tabs = document.querySelectorAll('.group-tab');
-        for (var i = 0; i < tabs.length; i++) {
-            tabs[i].classList.remove('active');
-        }
-        document.getElementById('tab-' + currentGroup).classList.add('active');
-
+        renderGroupTabs();
         loadGroupData();
         renderAll();
         updateTabCounts();
