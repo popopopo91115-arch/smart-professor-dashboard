@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>نظام الغيابات - جامعة كربلاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a3a5c;
+            --primary-light: #2c5f8a;
+            --primary-dark: #0f2440;
+            --accent: #3498db;
+            --accent-light: #5dade2;
+            --white: #ffffff;
+            --light-bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --danger-dark: #c0392b;
+            --orange-bg: #fff3e0;
+            --red-bg: #fde8e8;
+            --border: #e0e6ed;
+            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 20px rgba(26,58,92,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: var(--white);
+            padding: 4px;
+        }
+
+        .header-title h1 {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            opacity: 0.85;
+            font-weight: 300;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-white {
+            background: var(--white);
+            color: var(--primary);
+        }
+
+        .btn-white:hover {
+            background: var(--light-bg);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #2ecc71;
+            transform: translateY(-2px);
+        }
+
+        /* Group Tabs */
+        .group-tabs-container {
+            background: var(--white);
+            border-bottom: 2px solid var(--border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 76px;
+            z-index: 99;
+        }
+
+        .group-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+            padding: 0 20px;
+        }
+
+        .group-tab {
+            padding: 14px 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-tab:hover {
+            color: var(--accent);
+            background: #f7fafc;
+        }
+
+        .group-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: #f0f7ff;
+            font-weight: 700;
+        }
+
+        .group-tab .tab-count {
+            background: var(--light-bg);
+            color: var(--text-light);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .group-tab.active .tab-count {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 25px 20px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            border-right: 4px solid transparent;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card.total { border-right-color: var(--accent); }
+        .stat-card.absent { border-right-color: var(--warning); }
+        .stat-card.warned { border-right-color: var(--danger); }
+        .stat-card.plus { border-right-color: var(--success); }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .stat-card.total .stat-icon { background: #e8f4fd; }
+        .stat-card.absent .stat-icon { background: #fef3e2; }
+        .stat-card.warned .stat-icon { background: #fde8e8; }
+        .stat-card.plus .stat-icon { background: #e8f8ef; }
+
+        .stat-info h3 {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* Search & Controls */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-light);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition);
+            background: var(--card-bg);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .table-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 14px 16px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        tbody td {
+            padding: 12px 16px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .student-number {
+            color: var(--text-light);
+            font-weight: 500;
+            width: 50px;
+        }
+
+        .student-name {
+            font-weight: 600;
+            min-width: 180px;
+        }
+
+        .absence-count {
+            font-weight: 800;
+            font-size: 18px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .plus-count {
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            color: var(--success);
+            min-width: 60px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-ok {
+            background: #e8f8ef;
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: var(--orange-bg);
+            color: #e67e22;
+        }
+
+        .status-danger {
+            background: var(--red-bg);
+            color: var(--danger);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .row-warning {
+            background-color: #fff8e1 !important;
+        }
+
+        .row-danger {
+            background-color: #ffebee !important;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .btn-add-absence {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-add-absence:hover {
+            background: var(--danger-dark);
+            transform: scale(1.1);
+        }
+
+        .btn-remove-absence {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-remove-absence:hover {
+            background: #2ecc71;
+            transform: scale(1.1);
+        }
+
+        .btn-add-plus {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-add-plus:hover {
+            background: var(--accent-light);
+            transform: scale(1.1);
+        }
+
+        .btn-remove-plus {
+            background: #95a5a6;
+            color: var(--white);
+        }
+
+        .btn-remove-plus:hover {
+            background: #7f8c8d;
+            transform: scale(1.1);
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: var(--white);
+            font-size: 14px;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: var(--white);
+            font-size: 14px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        /* Add Student Bar */
+        .add-student-bar {
+            margin-bottom: 20px;
+        }
+
+        .add-student-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 2px dashed var(--accent);
+        }
+
+        .add-icon {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .add-student-input {
+            flex: 1;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .add-student-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.15);
+        }
+
+        .add-student-btn {
+            white-space: nowrap;
+            padding: 10px 20px;
+        }
+
+        @media (max-width: 600px) {
+            .add-student-container {
+                flex-wrap: wrap;
+            }
+            .add-student-input {
+                width: 100%;
+            }
+            .add-student-btn {
+                width: 100%;
+            }
+            .add-icon {
+                display: none;
+            }
+        }
+
+        /* Top Absent List */
+        .top-absent-section {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .top-absent-header {
+            background: linear-gradient(135deg, var(--warning) 0%, #e67e22 100%);
+            color: var(--white);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-absent-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .top-absent-list {
+            padding: 15px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .top-absent-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #fef9f9;
+            border-radius: 10px;
+            border-right: 3px solid var(--danger);
+            transition: var(--transition);
+        }
+
+        .top-absent-item:hover {
+            background: #fde8e8;
+            transform: translateX(-3px);
+        }
+
+        .top-absent-item .rank {
+            width: 28px;
+            height: 28px;
+            background: var(--danger);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .top-absent-item .name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .top-absent-item .count {
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--danger);
+        }
+
+        /* Modal - Full Page Report */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light-bg);
+            z-index: 200;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius);
+            max-width: 750px;
+            width: 95%;
+            margin: 20px auto 40px auto;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+            background: var(--primary);
+            color: var(--white);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .report-section {
+            margin-bottom: 20px;
+        }
+
+        .report-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .report-table th {
+            background: var(--light-bg);
+            padding: 10px;
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .report-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 12px 20px;
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: var(--shadow-hover);
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast-success { background: var(--success); }
+        .toast-warning { background: var(--warning); }
+        .toast-danger { background: var(--danger); }
+        .toast-info { background: var(--accent); }
+
+        @keyframes toastIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px;
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .header-title {
+                justify-content: center;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+
+            .header-title h1 {
+                font-size: 18px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+            }
+
+            .stat-info h3 {
+                font-size: 22px;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+
+            .top-absent-list {
+                grid-template-columns: 1fr;
+            }
+
+            thead th, tbody td {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
+            .action-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 16px;
+            }
+
+            .student-name {
+                min-width: 120px;
+            }
+
+            .group-tabs {
+                overflow-x: auto;
+            }
+
+            .group-tab {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .group-tabs-container {
+                top: 0;
+                position: relative;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .header-title h1 {
+                font-size: 16px;
+            }
+
+            .main-content {
+                padding: 15px 10px;
+            }
+        }
+
+        /* Reset All Button Confirmation */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 250;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-overlay.active {
+            display: flex;
+        }
+
+        .confirm-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .confirm-box h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--danger);
+        }
+
+        .confirm-box p {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Print styles */
+        @media print {
+            .header, .controls-bar, .action-btns, .header-actions, .top-absent-section, .footer, .toast-container, .group-tabs-container {
+                display: none !important;
+            }
+            .table-container {
+                box-shadow: none;
+            }
+            .main-content {
+                padding: 0;
+            }
+            .stats-grid {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <img src="logo.jpeg" alt="شعار جامعة كربلاء" class="logo-img">
+            <div>
+                <h1>نظام الغيابات - جامعة كربلاء</h1>
+                <p>لوحة تحكم الدكتور - إدارة حضور وغياب الطلاب</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-white" onclick="showReport()">&#x1F4CB; تقرير الغيابات</button>
+            <button class="btn btn-accent" onclick="resetTodayAbsences()">&#x1F504; تصفير غيابات اليوم</button>
+            <button class="btn btn-danger" onclick="confirmResetAll()">&#x1F5D1; إعادة تعيين الكل</button>
+            <button class="btn btn-danger" style="background:#8e44ad;" onclick="confirmClearNames()">&#x1F9F9; تصفير القوائم من الأسماء</button>
+        </div>
+    </header>
+
+    <!-- Group Tabs -->
+    <div class="group-tabs-container">
+        <div class="group-tabs" id="groupTabs">
+            <button class="group-tab active" onclick="switchGroup('all')" id="tab-all">
+                &#x1F4DA; جميع الطلاب
+                <span class="tab-count" id="count-all">51</span>
+            </button>
+            <button class="group-tab" onclick="switchGroup('a1')" id="tab-a1">
+                &#x1F4D8; A1
+                <span class="tab-count" id="count-a1">25</span>
+            </button>
+            <button class="group-tab" onclick="switchGroup('a2')" id="tab-a2">
+                &#x1F4D7; A2
+                <span class="tab-count" id="count-a2">20</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card total">
+                <div class="stat-icon">&#x1F465;</div>
+                <div class="stat-info">
+                    <h3 id="totalStudents">51</h3>
+                    <p>إجمالي الطلاب</p>
+                </div>
+            </div>
+            <div class="stat-card absent">
+                <div class="stat-icon">&#x1F4C5;</div>
+                <div class="stat-info">
+                    <h3 id="todayAbsences">0</h3>
+                    <p>غيابات اليوم</p>
+                </div>
+            </div>
+            <div class="stat-card warned">
+                <div class="stat-icon">&#x26A0;</div>
+                <div class="stat-info">
+                    <h3 id="warnedStudents">0</h3>
+                    <p>طلاب منذرون</p>
+                </div>
+            </div>
+            <div class="stat-card plus">
+                <div class="stat-icon">&#x2B50;</div>
+                <div class="stat-info">
+                    <h3 id="totalPlus">0</h3>
+                    <p>مجموع البلس</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search & Controls -->
+        <div class="controls-bar">
+            <div class="search-container">
+                <span class="search-icon">&#x1F50D;</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="ابحث عن طالب بالاسم..." oninput="filterStudents()">
+            </div>
+        </div>
+
+        <!-- Add New Student -->
+        <div class="add-student-bar">
+            <div class="add-student-container">
+                <span class="add-icon">&#x2795;</span>
+                <input type="text" class="add-student-input" id="newStudentInput" placeholder="أدخل اسم الطالب الجديد...">
+                <button class="btn btn-accent add-student-btn" onclick="addNewStudent()">إضافة طالب</button>
+            </div>
+        </div>
+
+        <!-- Top Absent Students -->
+        <section class="top-absent-section" id="topAbsentSection">
+            <div class="top-absent-header">
+                <span>&#x1F4CB;</span>
+                <h2>الطلاب الغائبون اليوم</h2>
+            </div>
+            <div class="top-absent-list" id="topAbsentList">
+            </div>
+        </section>
+
+        <!-- Students Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2>&#x1F4D6; سجل الطلاب</h2>
+                <span id="showingCount" style="font-size: 13px; opacity: 0.8;"></span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>اسم الطالب</th>
+                            <th>عدد الغيابات</th>
+                            <th>تواريخ الغياب</th>
+                            <th>تسجيل غياب</th>
+                            <th>البلس (+)</th>
+                            <th>إدارة البلس</th>
+                            <th>الحالة</th>
+                            <th>إدارة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>نظام الغيابات - جامعة كربلاء &copy; 2026 - جميع الحقوق محفوظة</p>
+        </footer>
+    </main>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>&#x1F4CB; تقرير الغيابات النهائي</h2>
+                <button class="modal-close" onclick="closeReport()">&times;</button>
+            </div>
+            <div class="modal-body" id="reportBody">
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Reset Modal -->
+    <div class="confirm-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <h3 id="confirmTitle">&#x26A0; تأكيد</h3>
+            <p id="confirmMessage">هل أنت متأكد من إعادة تعيين جميع بيانات الغيابات والبلس؟ لا يمكن التراجع عن هذا الإجراء.</p>
+            <div class="confirm-actions">
+                <button class="btn btn-danger" id="confirmActionBtn" onclick="resetAll()">نعم، تأكيد</button>
+                <button class="btn btn-white" style="border: 1px solid var(--border);" onclick="closeConfirm()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // =============================================
+        // مصفوفات البيانات الأساسية لكل كروب
+        // =============================================
+        var groupData = {
+            all: {
+                label: 'جميع الطلاب',
+                names: [
+                    "أثمار احمد قبيل", "احمد عبد اللطيف", "اشرف صلاح", "أفنان سالم",
+                    "امير محمود", "جعفر رعد", "حسين عادل", "حوراء علي",
+                    "حوراء ناصر", "حيدر نوفل", "زهراء حسين", "زهراء كمال",
+                    "زهراء ميثم", "زين العابدين حسين", "زينب احمد", "زينب علي",
+                    "سبأ حسن", "سيف فارس", "شهد عامر", "علا لؤي",
+                    "علي ايمن", "علي حسن", "علي محمد", "فاطمة حسن",
+                    "فاطمة حيدر", "فاطمة ناصر", "فاطمة صلاح", "فاطمة علي",
+                    "فاطمة ناطق", "كوثر رزاق", "محمد ايوب", "محمد صلاح",
+                    "مرتضى فلاح", "مصطفى حسام", "مصطفى مكي", "ملاك سعد",
+                    "منتهى سالم", "نرجس سمير", "نور الحسين عباس", "علي سامي",
+                    "حسين علي", "هاجر جبار", "سجاد حسن", "نرجس جبار",
+                    "فاطمة عبد الصمد", "آيات عدنان", "آيات محمد", "احمد عبد الحسين",
+                    "بنين طاهر", "سجي ناصر", "حسن مجاهد"
+                ],
+                storageKey: 'smartProfessorStudents'
+            },
+            a1: {
+                label: 'A1',
+                names: [
+                    "اثمار احمد قبيل نايف",
+                    "احمد عبد اللطيف اسود راضي",
+                    "جعفر رعد ناصح خليل",
+                    "جنان طعمة جحات صباح",
+                    "حسين عادل عبد علي محمد",
+                    "حسين يعرب حمزة مطر",
+                    "حوراء علي يحيى مطشر",
+                    "محمد صلاح عبد الامير عبيد",
+                    "حيدر نوفل حسين مراد",
+                    "رقية جاسب نجم عبد",
+                    "زهراء حسين عبد الهادي عبيد",
+                    "زهراء كمال صالح مهدي",
+                    "زين العابدين حسين جميل مال الله",
+                    "زينب علي حسين يوسف",
+                    "سبا حسن صباح عبيد",
+                    "سيف فارس علي عباس",
+                    "شهد عامر صكبان عبد الله",
+                    "محمد ايوب عبد عجيرش",
+                    "آيات محمد علي",
+                    "احمد عبد الحسين خليل",
+                    "نرجس جبار حسن",
+                    "حسين علي مهدي",
+                    "ايات عدنان حسين",
+                    "بنين طاهر محمد",
+                    "نور الحسين"
+                ],
+                storageKey: 'smartProfessor_a1'
+            },
+            a2: {
+                label: 'A2',
+                names: [
+                    "فاطمة حيدر ناصر عبود",
+                    "فاطمة صلاح عبود مطشر",
+                    "فاطمة علي زايد عماش",
+                    "كوثر رزاق مهدي محمود",
+                    "حوراء ناصر كامل جلاب",
+                    "مرتضى فلاح ضاحي عبود",
+                    "مصطفى حسام كامل عبد",
+                    "مصطفى مكي حسن حسين",
+                    "ملاك سعد حسن خلف",
+                    "منتهى سالم عبد حسين",
+                    "نرجس سمير حسن عباس",
+                    "علا لؤي عادل جاسب",
+                    "أفنان سالم عبد الرزاق علي",
+                    "زهراء ميثم حاتم",
+                    "أمير محمود كاظم",
+                    "زينب احمد حميد مهدي",
+                    "هاجر جبار",
+                    "علي سامي نجف",
+                    "سجاد حسن نعمة",
+                    "علي ايمن"
+                ],
+                storageKey: 'smartProfessor_a2'
+            }
+        };
+
+        var currentGroup = 'all';
+        var students = [];
+
+        // =============================================
+        // وظيفة تهيئة المصفوفة (Initialize Students Array)
+        // =============================================
+        function initializeStudents(names) {
+            return names.map(function(name, index) {
+                return {
+                    id: index + 1,
+                    name: name,
+                    absences: 0,
+                    plus: 0,
+                    todayAbsent: false,
+                    absenceDates: []
+                };
+            });
+        }
+
+        // =============================================
+        // وظائف التخزين المحلي (Local Storage Functions)
+        // =============================================
+        function getStorageKey() {
+            return groupData[currentGroup].storageKey;
+        }
+
+        function saveToLocalStorage(data) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            var data = localStorage.getItem(getStorageKey());
+            if (data) {
+                return JSON.parse(data);
+            }
+            return null;
+        }
+
+        function saveCurrentGroup() {
+            localStorage.setItem('smartProfessorCurrentGroup', currentGroup);
+        }
+
+        function loadCurrentGroup() {
+            return localStorage.getItem('smartProfessorCurrentGroup') || 'all';
+        }
+
+        // =============================================
+        // وظيفة تحميل بيانات الكروب الحالي
+        // =============================================
+        function loadGroupData() {
+            var data = loadFromLocalStorage();
+            var names = groupData[currentGroup].names;
+
+            if (!data) {
+                students = initializeStudents(names);
+                saveToLocalStorage(students);
+            } else {
+                students = data;
+            }
+
+            // Ensure absenceDates exists for old data
+            for (var i = 0; i < students.length; i++) {
+                if (!students[i].absenceDates) {
+                    students[i].absenceDates = [];
+                }
+            }
+
+            // Reset today flags on every page load
+            students = students.map(function(s) {
+                s.todayAbsent = false;
+                return s;
+            });
+            saveToLocalStorage(students);
+        }
+
+        // =============================================
+        // وظيفة التبديل بين الكروبات (Switch Group Function)
+        // =============================================
+        function switchGroup(group) {
+            currentGroup = group;
+            saveCurrentGroup();
+
+            // Update tab styles
+            var tabs = document.querySelectorAll('.group-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            document.getElementById('tab-' + group).classList.add('active');
+
+            // Load group data
+            loadGroupData();
+
+            // Clear search
+            document.getElementById('searchInput').value = '';
+
+            // Render
+            renderAll();
+            updateTabCounts();
+        }
+
+        // =============================================
+        // وظيفة تحديث أعداد التبويبات
+        // =============================================
+        function updateTabCounts() {
+            var groups = ['all', 'a1', 'a2'];
+            for (var g = 0; g < groups.length; g++) {
+                var key = groupData[groups[g]].storageKey;
+                var data = localStorage.getItem(key);
+                var count = 0;
+                if (data) {
+                    count = JSON.parse(data).length;
+                } else {
+                    count = groupData[groups[g]].names.length;
+                }
+                document.getElementById('count-' + groups[g]).textContent = count;
+            }
+        }
+
+        // =============================================
+        // وظيفة تسجيل الغياب (Record Absence Function)
+        // =============================================
+        function formatDate(date) {
+            var d = new Date(date);
+            var day = d.getDate();
+            var month = d.getMonth() + 1;
+            var year = d.getFullYear();
+            return year + '/' + (month < 10 ? '0' + month : month) + '/' + (day < 10 ? '0' + day : day);
+        }
+
+        function addAbsence(studentId) {
+            var student = findStudentById(studentId);
+            if (student) {
+                student.absences++;
+                student.todayAbsent = true;
+                if (!student.absenceDates) student.absenceDates = [];
+                student.absenceDates.push(formatDate(new Date()));
+                saveToLocalStorage(students);
+                renderAll();
+                showToast("تم تسجيل غياب: " + student.name, getAbsenceToastType(student.absences));
+            }
+        }
+
+        // =============================================
+        // وظيفة تصحيح الغياب (Correct Absence Function)
+        // =============================================
+        function removeAbsence(studentId) {
+            var student = findStudentById(studentId);
+            if (student && student.absences > 0) {
+                student.absences--;
+                if (student.absenceDates && student.absenceDates.length > 0) {
+                    student.absenceDates.pop();
+                }
+                if (student.absences === 0) {
+                    student.todayAbsent = false;
+                }
+                saveToLocalStorage(students);
+                renderAll();
+                showToast("تم تصحيح غياب: " + student.name, "success");
+            }
+        }
+
+        // =============================================
+        // وظيفة إضافة طالب جديد (Add New Student Function)
+        // =============================================
+        function addNewStudent() {
+            var input = document.getElementById('newStudentInput');
+            var name = input.value.trim();
+            if (!name) {
+                showToast("الرجاء إدخال اسم الطالب", "warning");
+                return;
+            }
+            var maxId = 0;
+            for (var i = 0; i < students.length; i++) {
+                if (students[i].id > maxId) maxId = students[i].id;
+            }
+            var newStudent = {
+                id: maxId + 1,
+                name: name,
+                absences: 0,
+                plus: 0,
+                todayAbsent: false,
+                absenceDates: []
+            };
+            students.push(newStudent);
+            saveToLocalStorage(students);
+            input.value = '';
+            renderAll();
+            updateTabCounts();
+            showToast("تم إضافة الطالب: " + name, "success");
+        }
+
+        // =============================================
+        // وظيفة تعديل اسم الطالب (Edit Student Name Function)
+        // =============================================
+        function editStudentName(studentId) {
+            var student = findStudentById(studentId);
+            if (!student) return;
+            var newName = prompt("تعديل اسم الطالب:", student.name);
+            if (newName !== null && newName.trim() !== '') {
+                student.name = newName.trim();
+                saveToLocalStorage(students);
+                renderAll();
+                showToast("تم تعديل الاسم إلى: " + student.name, "info");
+            }
+        }
+
+        // =============================================
+        // وظيفة حذف الطالب (Delete Student Function)
+        // =============================================
+        var pendingDeleteId = null;
+
+        function confirmDeleteStudent(studentId) {
+            var student = findStudentById(studentId);
+            if (!student) return;
+            pendingDeleteId = studentId;
+            document.getElementById('confirmTitle').textContent = '\uD83D\uDDD1 تأكيد حذف الطالب';
+            document.getElementById('confirmMessage').textContent = 'هل أنت متأكد من حذف الطالب "' + student.name + '" بالكامل؟ لا يمكن التراجع عن هذا الإجراء.';
+            document.getElementById('confirmActionBtn').setAttribute('onclick', 'deleteStudent()');
+            document.getElementById('confirmActionBtn').textContent = 'نعم، حذف';
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function deleteStudent() {
+            if (pendingDeleteId === null) return;
+            var student = findStudentById(pendingDeleteId);
+            var name = student ? student.name : '';
+            students = students.filter(function(s) {
+                return s.id !== pendingDeleteId;
+            });
+            saveToLocalStorage(students);
+            pendingDeleteId = null;
+            closeConfirm();
+            renderAll();
+            updateTabCounts();
+            showToast("تم حذف الطالب: " + name, "warning");
+        }
+
+        // =============================================
+        // وظائف البلس (Plus Functions)
+        // =============================================
+        function addPlus(studentId) {
+            var student = findStudentById(studentId);
+            if (student) {
+                student.plus++;
+                saveToLocalStorage(students);
+                renderAll();
+                showToast("تم إضافة بلس لـ: " + student.name, "info");
+            }
+        }
+
+        function removePlus(studentId) {
+            var student = findStudentById(studentId);
+            if (student && student.plus > 0) {
+                student.plus--;
+                saveToLocalStorage(students);
+                renderAll();
+                showToast("تم إزالة بلس من: " + student.name, "warning");
+            }
+        }
+
+        // =============================================
+        // وظيفة البحث في المصفوفة (Search/Filter Function)
+        // =============================================
+        function filterStudents() {
+            renderTable();
+        }
+
+        function getFilteredStudents() {
+            var query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) return students;
+            return students.filter(function(s) {
+                return s.name.toLowerCase().includes(query);
+            });
+        }
+
+        // =============================================
+        // وظيفة البحث عن طالب بالمعرف (Find Student Function)
+        // =============================================
+        function findStudentById(id) {
+            for (var i = 0; i < students.length; i++) {
+                if (students[i].id === id) return students[i];
+            }
+            return null;
+        }
+
+        // =============================================
+        // وظيفة حساب الإحصائيات (Calculate Stats Function)
+        // =============================================
+        function calculateStats() {
+            var totalStudents = students.length;
+            var todayAbsences = 0;
+            var warnedStudents = 0;
+            var totalPlus = 0;
+
+            for (var i = 0; i < students.length; i++) {
+                if (students[i].todayAbsent) todayAbsences++;
+                if (students[i].absences >= 3) warnedStudents++;
+                totalPlus += students[i].plus;
+            }
+
+            return {
+                totalStudents: totalStudents,
+                todayAbsences: todayAbsences,
+                warnedStudents: warnedStudents,
+                totalPlus: totalPlus
+            };
+        }
+
+        // =============================================
+        // وظيفة تحديد نوع التنبيه (Toast Type Function)
+        // =============================================
+        function getAbsenceToastType(absences) {
+            if (absences >= 5) return "danger";
+            if (absences >= 3) return "warning";
+            return "info";
+        }
+
+        // =============================================
+        // وظيفة تحديد حالة الطالب (Student Status Function)
+        // =============================================
+        function getStudentStatus(absences) {
+            if (absences >= 5) {
+                return '<span class="status-badge status-danger">&#x1F6A8; إنذار نهائي</span>';
+            }
+            if (absences >= 3) {
+                return '<span class="status-badge status-warning">&#x26A0; إنذار أول</span>';
+            }
+            return '<span class="status-badge status-ok">&#x2714; منتظم</span>';
+        }
+
+        // =============================================
+        // وظيفة تحديد صف الطالب (Row Class Function)
+        // =============================================
+        function getRowClass(absences) {
+            if (absences >= 5) return "row-danger";
+            if (absences >= 3) return "row-warning";
+            return "";
+        }
+
+        // =============================================
+        // وظيفة عرض الجدول (Render Table Function)
+        // =============================================
+        function renderTable() {
+            var filtered = getFilteredStudents();
+            var tbody = document.getElementById('studentsTableBody');
+            var html = '';
+
+            for (var i = 0; i < filtered.length; i++) {
+                var s = filtered[i];
+                var rowClass = getRowClass(s.absences);
+                var rowNum = students.indexOf(s) + 1;
+                html += '<tr class="' + rowClass + '">';
+                html += '<td class="student-number">' + rowNum + '</td>';
+                html += '<td class="student-name" id="name-' + s.id + '">' + s.name + '</td>';
+                html += '<td class="absence-count">' + s.absences + '</td>';
+                var dates = (s.absenceDates && s.absenceDates.length > 0) ? s.absenceDates.join('، ') : '-';
+                html += '<td style="font-size: 12px; max-width: 180px; word-wrap: break-word; color: #7f8c8d;">' + dates + '</td>';
+                html += '<td>';
+                html += '<div class="action-btns">';
+                html += '<button class="action-btn btn-add-absence" onclick="addAbsence(' + s.id + ')" title="تسجيل غياب">+</button>';
+                html += '<button class="action-btn btn-remove-absence" onclick="removeAbsence(' + s.id + ')" title="تصحيح غياب">-</button>';
+                html += '</div>';
+                html += '</td>';
+                html += '<td class="plus-count">' + s.plus + '</td>';
+                html += '<td>';
+                html += '<div class="action-btns">';
+                html += '<button class="action-btn btn-add-plus" onclick="addPlus(' + s.id + ')" title="إضافة بلس">+</button>';
+                html += '<button class="action-btn btn-remove-plus" onclick="removePlus(' + s.id + ')" title="إزالة بلس">-</button>';
+                html += '</div>';
+                html += '</td>';
+                html += '<td>' + getStudentStatus(s.absences) + '</td>';
+                html += '<td>';
+                html += '<div class="action-btns">';
+                html += '<button class="action-btn btn-edit" onclick="editStudentName(' + s.id + ')" title="تعديل الاسم">&#x270F;</button>';
+                html += '<button class="action-btn btn-delete" onclick="confirmDeleteStudent(' + s.id + ')" title="حذف الطالب">&#x1F5D1;</button>';
+                html += '</div>';
+                html += '</td>';
+                html += '</tr>';
+            }
+
+            tbody.innerHTML = html;
+            document.getElementById('showingCount').textContent = 'عرض ' + filtered.length + ' من ' + students.length + ' طالب';
+        }
+
+        // =============================================
+        // وظيفة عرض الإحصائيات (Render Stats Function)
+        // =============================================
+        function renderStats() {
+            var stats = calculateStats();
+            document.getElementById('totalStudents').textContent = stats.totalStudents;
+            document.getElementById('todayAbsences').textContent = stats.todayAbsences;
+            document.getElementById('warnedStudents').textContent = stats.warnedStudents;
+            document.getElementById('totalPlus').textContent = stats.totalPlus;
+        }
+
+        // =============================================
+        // وظيفة عرض الغائبون اليوم (Render Today Absent Function)
+        // =============================================
+        function renderTopAbsent() {
+            var todayList = students.filter(function(s) {
+                return s.todayAbsent === true;
+            });
+
+            var container = document.getElementById('topAbsentList');
+            var section = document.getElementById('topAbsentSection');
+
+            if (todayList.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            var html = '';
+            for (var i = 0; i < todayList.length; i++) {
+                html += '<div class="top-absent-item">';
+                html += '<span class="rank">' + (i + 1) + '</span>';
+                html += '<span class="name">' + todayList[i].name + '</span>';
+                html += '<span class="count">' + todayList[i].absences + ' غياب كلي</span>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        // وظيفة العرض الشامل (Render All Function)
+        // =============================================
+        function renderAll() {
+            renderStats();
+            renderTable();
+            renderTopAbsent();
+        }
+
+        // =============================================
+        // وظيفة التنبيهات (Toast Notification Function)
+        // =============================================
+        function showToast(message, type) {
+            var container = document.getElementById('toastContainer');
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        // =============================================
+        // وظيفة التقرير النهائي (Export Report Function)
+        // =============================================
+        function showReport() {
+            var modal = document.getElementById('reportModal');
+            var body = document.getElementById('reportBody');
+
+            var stats = calculateStats();
+            var groupLabel = groupData[currentGroup].label;
+
+            var sortedStudents = students.slice().sort(function(a, b) { return a.id - b.id; });
+
+            var warned = sortedStudents.filter(function(s) { return s.absences >= 3 && s.absences < 5; });
+            var finalWarned = sortedStudents.filter(function(s) { return s.absences >= 5; });
+            var withPlus = sortedStudents.filter(function(s) { return s.plus > 0; })
+                .sort(function(a, b) { return b.plus - a.plus; });
+
+            var html = '';
+
+            // Group label
+            html += '<div style="text-align: center; margin-bottom: 15px; padding: 10px; background: #f0f7ff; border-radius: 8px;">';
+            html += '<strong style="font-size: 16px; color: #1a3a5c;">الكروب: ' + groupLabel + '</strong>';
+            html += '</div>';
+
+            // Summary
+            html += '<div class="report-section">';
+            html += '<h3>&#x1F4CA; ملخص عام</h3>';
+            html += '<table class="report-table">';
+            html += '<tr><td>إجمالي عدد الطلاب</td><td><strong>' + stats.totalStudents + '</strong></td></tr>';
+            html += '<tr><td>غيابات اليوم</td><td><strong>' + stats.todayAbsences + '</strong></td></tr>';
+            html += '<tr><td>طلاب منذرون (إنذار أول)</td><td><strong>' + warned.length + '</strong></td></tr>';
+            html += '<tr><td>طلاب منذرون (إنذار نهائي)</td><td><strong>' + finalWarned.length + '</strong></td></tr>';
+            html += '<tr><td>مجموع نقاط البلس</td><td><strong>' + stats.totalPlus + '</strong></td></tr>';
+            html += '</table>';
+            html += '</div>';
+
+            // All students
+            html += '<div class="report-section">';
+            html += '<h3>&#x1F4D6; تقرير الغيابات لجميع الطلاب (' + sortedStudents.length + ' طالب)</h3>';
+            html += '<table class="report-table">';
+            html += '<tr><th>#</th><th>الاسم</th><th>عدد الغيابات</th><th>تواريخ الغياب</th><th>البلس</th><th>الحالة</th></tr>';
+            for (var i = 0; i < sortedStudents.length; i++) {
+                var s = sortedStudents[i];
+                var status = s.absences >= 5 ? 'إنذار نهائي' : (s.absences >= 3 ? 'إنذار أول' : 'منتظم');
+                var rowStyle = '';
+                var absStyle = '';
+                if (s.absences >= 5) {
+                    rowStyle = ' style="background-color: #ffebee;"';
+                    absStyle = ' style="color: #e74c3c; font-weight: 800;"';
+                } else if (s.absences >= 3) {
+                    rowStyle = ' style="background-color: #fff8e1;"';
+                    absStyle = ' style="color: #e67e22; font-weight: 800;"';
+                }
+                var plusStyle = s.plus > 0 ? ' style="color: #27ae60; font-weight: 800;"' : '';
+                var datesStr = (s.absenceDates && s.absenceDates.length > 0) ? s.absenceDates.join('، ') : '-';
+                html += '<tr' + rowStyle + '><td>' + (i + 1) + '</td><td>' + s.name + '</td><td' + absStyle + '>' + s.absences + '</td><td style="font-size: 11px; color: #7f8c8d;">' + datesStr + '</td><td' + plusStyle + '>' + s.plus + '</td><td>' + status + '</td></tr>';
+            }
+            html += '</table>';
+            html += '</div>';
+
+            // Final Warned summary
+            if (finalWarned.length > 0) {
+                html += '<div class="report-section">';
+                html += '<h3 style="color: #e74c3c;">&#x1F6A8; ملخص: طلاب الإنذار النهائي (5 غيابات فأكثر)</h3>';
+                html += '<table class="report-table">';
+                html += '<tr><th>#</th><th>الاسم</th><th>عدد الغيابات</th></tr>';
+                for (var i = 0; i < finalWarned.length; i++) {
+                    html += '<tr style="background-color: #ffebee;"><td>' + (i + 1) + '</td><td>' + finalWarned[i].name + '</td><td style="color: #e74c3c; font-weight: 800;">' + finalWarned[i].absences + '</td></tr>';
+                }
+                html += '</table>';
+                html += '</div>';
+            }
+
+            // First Warning summary
+            if (warned.length > 0) {
+                html += '<div class="report-section">';
+                html += '<h3 style="color: #f39c12;">&#x26A0; ملخص: طلاب الإنذار الأول (3-4 غيابات)</h3>';
+                html += '<table class="report-table">';
+                html += '<tr><th>#</th><th>الاسم</th><th>عدد الغيابات</th></tr>';
+                for (var i = 0; i < warned.length; i++) {
+                    html += '<tr style="background-color: #fff8e1;"><td>' + (i + 1) + '</td><td>' + warned[i].name + '</td><td style="color: #f39c12; font-weight: 800;">' + warned[i].absences + '</td></tr>';
+                }
+                html += '</table>';
+                html += '</div>';
+            }
+
+            // Plus students summary
+            if (withPlus.length > 0) {
+                html += '<div class="report-section">';
+                html += '<h3 style="color: #27ae60;">&#x2B50; ملخص: طلاب البلس</h3>';
+                html += '<table class="report-table">';
+                html += '<tr><th>#</th><th>الاسم</th><th>نقاط البلس</th></tr>';
+                for (var i = 0; i < withPlus.length; i++) {
+                    html += '<tr><td>' + (i + 1) + '</td><td>' + withPlus[i].name + '</td><td style="color: #27ae60; font-weight: 800;">' + withPlus[i].plus + '</td></tr>';
+                }
+                html += '</table>';
+                html += '</div>';
+            }
+
+            // Print Button
+            html += '<div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">';
+            html += '<button class="btn btn-accent" onclick="printReport()">&#x1F5A8; طباعة التقرير</button>';
+            html += '</div>';
+
+            body.innerHTML = html;
+            document.body.style.overflow = 'hidden';
+            modal.scrollTop = 0;
+            modal.classList.add('active');
+            modal.scrollTop = 0;
+            requestAnimationFrame(function() {
+                modal.scrollTop = 0;
+            });
+        }
+
+        function closeReport() {
+            document.getElementById('reportModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // =============================================
+        // وظيفة طباعة التقرير (Print Report Function)
+        // =============================================
+        function printReport() {
+            var reportContent = document.getElementById('reportBody').innerHTML;
+            var groupLabel = groupData[currentGroup].label;
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write('<!DOCTYPE html>');
+            printWindow.document.write('<html lang="ar" dir="rtl"><head>');
+            printWindow.document.write('<meta charset="UTF-8">');
+            printWindow.document.write('<title>تقرير الغيابات النهائي - ' + groupLabel + '</title>');
+            printWindow.document.write('<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">');
+            printWindow.document.write('<style>');
+            printWindow.document.write('* { margin: 0; padding: 0; box-sizing: border-box; }');
+            printWindow.document.write('body { font-family: "Tajawal", sans-serif; direction: rtl; padding: 20px; color: #2c3e50; }');
+            printWindow.document.write('h2 { text-align: center; font-size: 22px; color: #1a3a5c; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #1a3a5c; }');
+            printWindow.document.write('h3 { font-size: 16px; color: #1a3a5c; margin: 15px 0 8px; padding-bottom: 5px; border-bottom: 2px solid #e0e6ed; }');
+            printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }');
+            printWindow.document.write('th { background: #f0f4f8; padding: 8px 10px; text-align: right; font-weight: 700; border: 1px solid #ddd; }');
+            printWindow.document.write('td { padding: 6px 10px; border: 1px solid #ddd; font-size: 13px; }');
+            printWindow.document.write('tr:nth-child(even) { background: #f9f9f9; }');
+            printWindow.document.write('.report-section { margin-bottom: 15px; }');
+            printWindow.document.write('button { display: none !important; }');
+            printWindow.document.write('@media print { body { padding: 10px; } }');
+            printWindow.document.write('</style></head><body>');
+            printWindow.document.write('<h2>تقرير الغيابات النهائي - ' + groupLabel + ' - جامعة كربلاء</h2>');
+            printWindow.document.write(reportContent);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.print();
+            };
+        }
+
+        // =============================================
+        // وظائف إعادة التعيين (Reset Functions)
+        // =============================================
+        function confirmResetAll() {
+            var groupLabel = groupData[currentGroup].label;
+            document.getElementById('confirmTitle').textContent = '\u26A0 تأكيد إعادة التعيين';
+            document.getElementById('confirmMessage').textContent = 'هل أنت متأكد من إعادة تعيين جميع بيانات الغيابات والبلس لكروب "' + groupLabel + '"؟ لا يمكن التراجع عن هذا الإجراء.';
+            document.getElementById('confirmActionBtn').setAttribute('onclick', 'resetAll()');
+            document.getElementById('confirmActionBtn').textContent = 'نعم، إعادة تعيين';
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmOverlay').classList.remove('active');
+            pendingDeleteId = null;
+        }
+
+        function resetAll() {
+            students = initializeStudents(groupData[currentGroup].names);
+            saveToLocalStorage(students);
+            closeConfirm();
+            renderAll();
+            updateTabCounts();
+            showToast("تم إعادة تعيين جميع البيانات بنجاح", "success");
+        }
+
+        function confirmClearNames() {
+            var groupLabel = groupData[currentGroup].label;
+            document.getElementById('confirmTitle').textContent = '\u26A0 تأكيد تصفير القائمة';
+            document.getElementById('confirmMessage').textContent = 'هل أنت متأكد من حذف جميع الأسماء من كروب "' + groupLabel + '"؟ سيتم مسح جميع الطلاب وبياناتهم. لا يمكن التراجع عن هذا الإجراء.';
+            document.getElementById('confirmActionBtn').setAttribute('onclick', 'clearAllNames()');
+            document.getElementById('confirmActionBtn').textContent = 'نعم، تصفير القائمة';
+            document.getElementById('confirmOverlay').classList.add('active');
+        }
+
+        function clearAllNames() {
+            students = [];
+            saveToLocalStorage(students);
+            closeConfirm();
+            renderAll();
+            updateTabCounts();
+            showToast("تم تصفير القائمة من جميع الأسماء بنجاح", "success");
+        }
+
+        function resetTodayAbsences() {
+            students = students.map(function(s) {
+                s.todayAbsent = false;
+                return s;
+            });
+            saveToLocalStorage(students);
+            renderAll();
+            showToast("تم تصفير غيابات اليوم", "info");
+        }
+
+        // =============================================
+        // إغلاق النوافذ عند الضغط خارجها
+        // =============================================
+        document.getElementById('reportModal').addEventListener('click', function(e) {
+            if (e.target === this) closeReport();
+        });
+
+        document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeConfirm();
+        });
+
+        document.getElementById('newStudentInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') addNewStudent();
+        });
+
+        // =============================================
+        // التشغيل الأولي (Initial Render)
+        // =============================================
+        currentGroup = loadCurrentGroup();
+        if (!groupData[currentGroup]) currentGroup = 'all';
+
+        // Activate correct tab
+        var tabs = document.querySelectorAll('.group-tab');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+        document.getElementById('tab-' + currentGroup).classList.add('active');
+
+        loadGroupData();
+        renderAll();
+        updateTabCounts();
+    </script>
+</body>
+</html>
