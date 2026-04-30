@@ -841,6 +841,83 @@
             border-bottom: 1px solid var(--border);
         }
 
+        /* Daily Log Styles */
+        .daily-log-dates {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .daily-log-date-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 12px;
+            cursor: pointer;
+            text-align: center;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            color: var(--text);
+        }
+
+        .daily-log-date-btn:hover {
+            border-color: var(--accent);
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .daily-log-date-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .daily-log-date-btn .date-count {
+            display: block;
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .daily-log-date-btn.active .date-count {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .daily-log-date-btn .date-day {
+            display: block;
+            font-size: 12px;
+            color: var(--accent);
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .daily-log-date-btn.active .date-day {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .daily-log-detail {
+            margin-top: 15px;
+        }
+
+        .daily-log-detail h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .daily-log-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -1071,6 +1148,7 @@
         </div>
         <div class="header-actions">
             <button class="btn btn-white" onclick="showReport()">&#x1F4CB; تقرير الغيابات</button>
+            <button class="btn btn-white" onclick="showDailyLog()">&#x1F4C5; سجل الأيام</button>
             <button class="btn btn-accent" onclick="resetTodayAbsences()">&#x1F504; تصفير غيابات اليوم</button>
             <button class="btn btn-danger" onclick="confirmResetAll()">&#x1F5D1; إعادة تعيين الكل</button>
             <button class="btn btn-danger" style="background:#8e44ad;" onclick="confirmClearNames()">&#x1F9F9; تصفير القائمة الحالية</button>
@@ -1221,6 +1299,18 @@
                 <button class="modal-close" onclick="closeReport()">&times;</button>
             </div>
             <div class="modal-body" id="reportBody">
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Log Modal -->
+    <div class="modal-overlay" id="dailyLogModal">
+        <div class="modal">
+            <div class="modal-header" style="background: #2980b9;">
+                <h2>&#x1F4C5; سجل الأيام - <span id="dailyLogGroupName"></span></h2>
+                <button class="modal-close" onclick="closeDailyLog()">&times;</button>
+            </div>
+            <div class="modal-body" id="dailyLogBody">
             </div>
         </div>
     </div>
@@ -1980,6 +2070,109 @@
         }
 
         // =============================================
+        // وظيفة سجل الأيام (Daily Attendance Log)
+        // =============================================
+        function getDayName(dateStr) {
+            var days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            var parts = dateStr.split('/');
+            var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            return days[d.getDay()];
+        }
+
+        function showDailyLog() {
+            var modal = document.getElementById('dailyLogModal');
+            var body = document.getElementById('dailyLogBody');
+            document.getElementById('dailyLogGroupName').textContent = groupData[currentGroup].label;
+
+            var dateMap = {};
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                if (s.absenceDates && s.absenceDates.length > 0) {
+                    for (var j = 0; j < s.absenceDates.length; j++) {
+                        var date = s.absenceDates[j];
+                        if (!dateMap[date]) dateMap[date] = [];
+                        dateMap[date].push(s.name);
+                    }
+                }
+            }
+
+            var dates = Object.keys(dateMap).sort().reverse();
+
+            if (dates.length === 0) {
+                body.innerHTML = '<div class="daily-log-empty">&#x1F4AD; لا توجد سجلات غياب بعد في هذه القائمة</div>';
+                modal.classList.add('active');
+                modal.scrollTop = 0;
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            var html = '<div class="daily-log-dates" id="dailyLogDates">';
+            for (var i = 0; i < dates.length; i++) {
+                var dayName = getDayName(dates[i]);
+                html += '<button class="daily-log-date-btn" onclick="showDayDetail(\'' + dates[i] + '\', this)">';
+                html += '<span class="date-day">' + dayName + '</span>';
+                html += dates[i];
+                html += '<span class="date-count">' + dateMap[dates[i]].length + ' غائب</span>';
+                html += '</button>';
+            }
+            html += '</div>';
+            html += '<div class="daily-log-detail" id="dailyLogDetail"></div>';
+
+            body.innerHTML = html;
+            modal.classList.add('active');
+            modal.scrollTop = 0;
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showDayDetail(date, btnEl) {
+            var btns = document.querySelectorAll('.daily-log-date-btn');
+            for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+            if (btnEl) btnEl.classList.add('active');
+
+            var absentStudents = [];
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                if (s.absenceDates && s.absenceDates.indexOf(date) !== -1) {
+                    absentStudents.push(s);
+                }
+            }
+
+            var dayName = getDayName(date);
+            var html = '<h3>&#x1F4CB; سجل يوم ' + dayName + ' - ' + date + ' (' + absentStudents.length + ' غائب)</h3>';
+            html += '<table class="report-table"><thead><tr>';
+            html += '<th>#</th><th>اسم الطالب</th><th>إجمالي الغيابات</th><th>الحالة</th>';
+            html += '</tr></thead><tbody>';
+            for (var i = 0; i < absentStudents.length; i++) {
+                var s = absentStudents[i];
+                var status = '';
+                var rowColor = '';
+                if (s.absences >= 5) {
+                    status = '&#x1F534; إنذار نهائي';
+                    rowColor = 'background-color: #fde8e8;';
+                } else if (s.absences >= 3) {
+                    status = '&#x1F7E0; إنذار أول';
+                    rowColor = 'background-color: #fef3e2;';
+                } else {
+                    status = '&#x1F7E2; منتظم';
+                }
+                html += '<tr style="' + rowColor + '">';
+                html += '<td>' + (i + 1) + '</td>';
+                html += '<td>' + s.name + '</td>';
+                html += '<td>' + s.absences + '</td>';
+                html += '<td>' + status + '</td>';
+                html += '</tr>';
+            }
+            html += '</tbody></table>';
+
+            document.getElementById('dailyLogDetail').innerHTML = html;
+        }
+
+        function closeDailyLog() {
+            document.getElementById('dailyLogModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // =============================================
         // وظيفة إضافة مجموعة طلاب دفعة واحدة
         // =============================================
         function toggleBulkAdd() {
@@ -2133,6 +2326,10 @@
         // =============================================
         document.getElementById('reportModal').addEventListener('click', function(e) {
             if (e.target === this) closeReport();
+        });
+
+        document.getElementById('dailyLogModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDailyLog();
         });
 
         document.getElementById('confirmOverlay').addEventListener('click', function(e) {
