@@ -159,20 +159,15 @@
             position: sticky;
             top: 76px;
             z-index: 99;
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            flex-wrap: wrap;
         }
 
         .group-tabs {
+            max-width: 1400px;
+            margin: 0 auto;
             display: flex;
             gap: 0;
+            padding: 0 20px;
             flex-wrap: wrap;
-            flex: 1;
         }
 
         .group-tab {
@@ -639,25 +634,29 @@
             color: var(--text-light);
         }
 
-        .new-group-btn {
-            background: var(--success);
-            color: var(--white);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .new-group-tab {
+            color: var(--success) !important;
+            border-bottom-color: transparent !important;
+            background: transparent !important;
+            font-weight: 600 !important;
         }
 
-        .new-group-btn:hover {
-            background: #2ecc71;
-            transform: translateY(-2px);
+        .new-group-tab:hover {
+            background: #f0fff4 !important;
+        }
+
+        .delete-group-x {
+            cursor: pointer;
+            font-size: 13px;
+            color: #e74c3c;
+            margin-right: 6px;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .delete-group-x:hover {
+            background: rgba(231, 76, 60, 0.15);
         }
 
         @media (max-width: 600px) {
@@ -1094,7 +1093,6 @@
                 <span class="tab-count" id="count-a2">20</span>
             </button>
         </div>
-        <button class="new-group-btn" onclick="createNewGroup()">&#x2795; إنشاء قائمة جديدة</button>
     </div>
 
     <!-- Main Content -->
@@ -2120,10 +2118,13 @@
                 html += icon + ' ' + groupData[key].label;
                 html += ' <span class="tab-count" id="count-' + key + '">0</span>';
                 if (key !== 'all' && key !== 'a1' && key !== 'a2') {
-                    html += ' <span onclick="event.stopPropagation(); deleteGroup(\'' + key + '\')" style="cursor:pointer;font-size:12px;color:#e74c3c;margin-right:4px;" title="حذف القائمة">&#x2716;</span>';
+                    html += ' <span class="delete-group-x" onclick="event.stopPropagation(); deleteGroup(\'' + key + '\')" title="حذف القائمة">&#x2716;</span>';
                 }
                 html += '</button>';
             }
+            html += '<button class="group-tab new-group-tab" onclick="createNewGroup()">';
+            html += '&#x2795; إنشاء قائمة';
+            html += '</button>';
             container.innerHTML = html;
         }
 
