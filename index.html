@@ -1073,7 +1073,7 @@
             <button class="btn btn-white" onclick="showReport()">&#x1F4CB; تقرير الغيابات</button>
             <button class="btn btn-accent" onclick="resetTodayAbsences()">&#x1F504; تصفير غيابات اليوم</button>
             <button class="btn btn-danger" onclick="confirmResetAll()">&#x1F5D1; إعادة تعيين الكل</button>
-            <button class="btn btn-danger" style="background:#8e44ad;" onclick="confirmClearNames()">&#x1F9F9; تصفير القوائم من الأسماء</button>
+            <button class="btn btn-danger" style="background:#8e44ad;" onclick="confirmClearNames()">&#x1F9F9; تصفير القائمة الحالية</button>
         </div>
     </header>
 
@@ -1966,7 +1966,7 @@
             closeConfirm();
             renderAll();
             updateTabCounts();
-            showToast("تم تصفير القائمة من جميع الأسماء بنجاح", "success");
+            showToast("تم تصفير قائمة \"" + groupData[currentGroup].label + "\" بنجاح", "success");
         }
 
         function resetTodayAbsences() {
