@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKY WARRIORS 3D - حرب الطيارات</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-top">
+                <div class="hud-item">
+                    <span class="hud-label">SCORE</span>
+                    <span id="score">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">TIME</span>
+                    <span id="time">0:00</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">HP</span>
+                    <span id="lives">5</span>
+                </div>
+            </div>
+            <div id="boss-health-container" class="hidden">
+                <span id="boss-name">BOSS</span>
+                <div class="boss-health-bar">
+                    <div id="boss-health-fill" class="boss-health-fill"></div>
+                </div>
+            </div>
+            <div id="powerup-indicator" class="hidden">
+                <span id="powerup-text">SHIELD ACTIVE</span>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="overlay">
+            <div class="menu-content">
+                <h1 class="game-title">SKY WARRIORS</h1>
+                <h2 class="game-subtitle">3D حرب الطيارات</h2>
+                <p class="mode-label">ENDLESS SURVIVAL MODE</p>
+                <button id="start-btn" class="menu-btn">ابدأ اللعبة</button>
+                <button id="controls-btn" class="menu-btn secondary">التحكم</button>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls-menu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>التحكم</h2>
+                <div class="controls-grid">
+                    <div class="control-item">
+                        <span class="key">W A S D</span>
+                        <span>تحريك الطائرة</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="key">AUTO</span>
+                        <span>إطلاق تلقائي</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="key">P</span>
+                        <span>إيقاف مؤقت</span>
+                    </div>
+                </div>
+                <button id="back-from-controls" class="menu-btn secondary">رجوع</button>
+            </div>
+        </div>
+
+        <!-- Pause -->
+        <div id="pause-menu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>إيقاف مؤقت</h2>
+                <button id="resume-btn" class="menu-btn">استمرار</button>
+                <button id="quit-btn" class="menu-btn secondary">القائمة الرئيسية</button>
+            </div>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over" class="overlay hidden">
+            <div class="menu-content">
+                <h2>انتهت اللعبة</h2>
+                <p id="final-score" class="final-stat"></p>
+                <p id="final-time" class="final-stat"></p>
+                <button id="restart-btn" class="menu-btn">إعادة المحاولة</button>
+                <button id="menu-btn" class="menu-btn secondary">القائمة الرئيسية</button>
+            </div>
+        </div>
+
+        <!-- Boss Warning -->
+        <div id="boss-warning" class="overlay hidden">
+            <div class="warning-content">
+                <h2 class="warning-text">⚠️ WARNING ⚠️</h2>
+                <p class="boss-approach">BOSS APPROACHING</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/game3d.js"></script>
+</body>
+</html>

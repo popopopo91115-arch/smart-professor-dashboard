@@ -1,0 +1,271 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    width: 100vw;
+    height: 100vh;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* HUD */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 15px 25px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 200, 255, 0.3);
+}
+
+.hud-label {
+    font-size: 0.7em;
+    color: #0af;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.hud-item span:last-child {
+    font-size: 1.4em;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0af;
+}
+
+/* Boss Health */
+#boss-health-container {
+    text-align: center;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+}
+
+#boss-name {
+    color: #f44;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #f00;
+    display: block;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.boss-health-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 12px;
+    background: #222;
+    border: 1px solid #f44;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.boss-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f44, #ff0);
+    transition: width 0.2s ease;
+    border-radius: 6px;
+}
+
+/* Power-up Indicator */
+#powerup-indicator {
+    text-align: center;
+    margin-top: 8px;
+}
+
+#powerup-text {
+    color: #0f8;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0f8;
+    padding: 4px 12px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 4px;
+    animation: pulse-glow 1s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Overlays */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+.menu-content {
+    text-align: center;
+    color: #fff;
+    max-width: 500px;
+    padding: 40px;
+}
+
+.game-title {
+    font-size: 4em;
+    background: linear-gradient(180deg, #fff, #0af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    letter-spacing: 6px;
+    margin-bottom: 5px;
+}
+
+.game-subtitle {
+    font-size: 1.5em;
+    color: #0af;
+    margin-bottom: 10px;
+    opacity: 0.8;
+}
+
+.mode-label {
+    color: #0f8;
+    font-size: 0.9em;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    opacity: 0.7;
+}
+
+.menu-btn {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    margin: 12px auto;
+    padding: 14px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: 2px solid #0af;
+    background: rgba(0, 170, 255, 0.1);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+
+.menu-btn:hover {
+    background: rgba(0, 170, 255, 0.3);
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+}
+
+.menu-btn.secondary {
+    border-color: #555;
+    background: rgba(50, 50, 50, 0.3);
+}
+
+.menu-btn.secondary:hover {
+    border-color: #888;
+    background: rgba(80, 80, 80, 0.3);
+}
+
+/* Controls */
+.controls-grid {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.control-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.key {
+    background: rgba(0, 170, 255, 0.2);
+    border: 1px solid #0af;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #0af;
+    font-size: 0.85em;
+}
+
+/* Game Over */
+.final-stat {
+    font-size: 1.3em;
+    color: #0af;
+    margin: 8px 0;
+}
+
+/* Boss Warning */
+.warning-content {
+    text-align: center;
+    animation: warning-flash 0.5s infinite;
+}
+
+.warning-text {
+    font-size: 3em;
+    color: #f00;
+    text-shadow: 0 0 30px #f00;
+}
+
+.boss-approach {
+    font-size: 1.5em;
+    color: #ff6;
+    margin-top: 10px;
+    letter-spacing: 4px;
+}
+
+@keyframes warning-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.hidden {
+    display: none !important;
+}
