@@ -7,27 +7,124 @@
 body {
     background: #000;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    width: 100vw;
+    height: 100vh;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
 }
 
 #game-container {
     position: relative;
-    width: 800px;
-    height: 600px;
-    border: 3px solid #0ff;
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1);
-    border-radius: 5px;
+    width: 100vw;
+    height: 100vh;
 }
 
-#gameCanvas {
+/* HUD */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 15px 25px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 200, 255, 0.3);
+}
+
+.hud-label {
+    font-size: 0.7em;
+    color: #0af;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.hud-item span:last-child {
+    font-size: 1.4em;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0af;
+}
+
+/* Boss Health */
+#boss-health-container {
+    text-align: center;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 0, 0, 0.4);
+}
+
+#boss-name {
+    color: #f44;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #f00;
     display: block;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+}
+
+.boss-health-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 12px;
+    background: #222;
+    border: 1px solid #f44;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.boss-health-fill {
     width: 100%;
     height: 100%;
-    background: #000;
+    background: linear-gradient(90deg, #f44, #ff0);
+    transition: width 0.2s ease;
+    border-radius: 6px;
+}
+
+/* Power-up Indicator */
+#powerup-indicator {
+    text-align: center;
+    margin-top: 8px;
+}
+
+#powerup-text {
+    color: #0f8;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0f8;
+    padding: 4px 12px;
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: 4px;
+    animation: pulse-glow 1s infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
 }
 
 /* Overlays */
@@ -38,294 +135,137 @@ body {
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 20, 0.92);
-    backdrop-filter: blur(5px);
+    justify-content: center;
     z-index: 100;
-    animation: fadeIn 0.3s ease;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
 }
 
-.hidden {
-    display: none !important;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.overlay.hidden {
+    display: none;
 }
 
 .menu-content {
     text-align: center;
     color: #fff;
+    max-width: 500px;
     padding: 40px;
 }
 
-/* Title */
 .game-title {
-    font-size: 3em;
-    color: #0ff;
-    text-shadow: 0 0 20px #0ff, 0 0 40px #0ff, 0 0 60px #00f;
-    margin-bottom: 10px;
-    animation: glow 2s ease-in-out infinite alternate;
+    font-size: 4em;
+    background: linear-gradient(180deg, #fff, #0af);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    letter-spacing: 6px;
+    margin-bottom: 5px;
 }
 
 .game-subtitle {
     font-size: 1.5em;
-    color: #ff0;
-    text-shadow: 0 0 10px #ff0;
-    margin-bottom: 40px;
-    letter-spacing: 8px;
+    color: #0af;
+    margin-bottom: 10px;
+    opacity: 0.8;
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 20px #0ff, 0 0 40px #0ff; }
-    to { text-shadow: 0 0 30px #0ff, 0 0 60px #0ff, 0 0 80px #00f; }
-}
-
-/* Buttons */
-.menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
+.mode-label {
+    color: #0f8;
+    font-size: 0.9em;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    opacity: 0.7;
 }
 
 .menu-btn {
-    background: linear-gradient(135deg, #1a1a3e, #2a2a5e);
-    border: 2px solid #0ff;
-    color: #0ff;
-    padding: 15px 40px;
-    font-size: 1.2em;
-    cursor: pointer;
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    margin: 12px auto;
+    padding: 14px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: 2px solid #0af;
+    background: rgba(0, 170, 255, 0.1);
+    color: #fff;
     border-radius: 8px;
-    transition: all 0.3s ease;
-    min-width: 250px;
-    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
 }
 
 .menu-btn:hover {
-    background: linear-gradient(135deg, #2a2a5e, #3a3a7e);
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-    transform: scale(1.05);
+    background: rgba(0, 170, 255, 0.3);
+    transform: scale(1.03);
+    box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
 }
 
-.menu-btn:active {
-    transform: scale(0.95);
+.menu-btn.secondary {
+    border-color: #555;
+    background: rgba(50, 50, 50, 0.3);
+}
+
+.menu-btn.secondary:hover {
+    border-color: #888;
+    background: rgba(80, 80, 80, 0.3);
 }
 
 /* Controls */
 .controls-grid {
-    display: grid;
-    gap: 15px;
-    margin: 30px 0;
+    margin: 20px 0;
+    text-align: left;
 }
 
 .control-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background: rgba(0, 255, 255, 0.1);
-    border-radius: 5px;
-    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 10px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .key {
-    background: #1a1a3e;
-    padding: 5px 15px;
-    border-radius: 5px;
-    border: 1px solid #0ff;
-    color: #0ff;
-    font-weight: bold;
+    background: rgba(0, 170, 255, 0.2);
+    border: 1px solid #0af;
+    padding: 4px 10px;
+    border-radius: 4px;
     font-family: monospace;
-}
-
-.desc {
-    color: #ccc;
-    font-size: 1.1em;
-}
-
-/* About */
-.about-text {
-    color: #ccc;
-    line-height: 1.8;
-    margin: 20px 0;
-    text-align: right;
-}
-
-.features-list {
-    list-style: none;
-    text-align: right;
-    margin: 20px 0;
-}
-
-.features-list li {
-    padding: 8px 0;
-    color: #aaf;
-    font-size: 1.1em;
+    color: #0af;
+    font-size: 0.85em;
 }
 
 /* Game Over */
-.game-over-title {
-    font-size: 2.5em;
-    color: #f44;
-    text-shadow: 0 0 20px #f44;
-    margin-bottom: 20px;
-}
-
-.level-complete-title {
-    font-size: 2.5em;
-    color: #0f0;
-    text-shadow: 0 0 20px #0f0;
-    margin-bottom: 20px;
-}
-
-.final-score {
-    font-size: 1.8em;
-    color: #ff0;
-    margin: 15px 0;
-}
-
-.final-level {
+.final-stat {
     font-size: 1.3em;
-    color: #aaf;
-    margin-bottom: 30px;
+    color: #0af;
+    margin: 8px 0;
 }
 
-/* HUD */
-#hud {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 50;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
-}
-
-.hud-left, .hud-right {
-    display: flex;
-    gap: 20px;
-}
-
-.hud-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.hud-label {
-    color: #aaa;
-    font-size: 0.9em;
-}
-
-.hud-value {
-    color: #0ff;
-    font-size: 1.2em;
-    font-weight: bold;
-    text-shadow: 0 0 5px #0ff;
-}
-
-/* Boss Health Bar */
-#boss-health-container {
+/* Boss Warning */
+.warning-content {
     text-align: center;
+    animation: warning-flash 0.5s infinite;
 }
 
-.boss-name {
-    color: #f44;
-    font-size: 0.9em;
-    font-weight: bold;
-    text-shadow: 0 0 5px #f44;
-    display: block;
-    margin-bottom: 5px;
+.warning-text {
+    font-size: 3em;
+    color: #f00;
+    text-shadow: 0 0 30px #f00;
 }
 
-.boss-health-bar {
-    width: 200px;
-    height: 12px;
-    background: #333;
-    border: 1px solid #f44;
-    border-radius: 6px;
-    overflow: hidden;
+.boss-approach {
+    font-size: 1.5em;
+    color: #ff6;
+    margin-top: 10px;
+    letter-spacing: 4px;
 }
 
-.boss-health-fill {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #f44, #ff0);
-    transition: width 0.3s ease;
-    border-radius: 6px;
+@keyframes warning-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
-/* Elite Health Bar */
-#elite-health-container {
-    text-align: center;
-    margin-top: 4px;
-}
-
-.elite-name {
-    color: #ffa500;
-    font-size: 0.8em;
-    font-weight: bold;
-    text-shadow: 0 0 5px #ffa500;
-    display: block;
-    margin-bottom: 3px;
-}
-
-.elite-health-bar {
-    width: 180px;
-    height: 10px;
-    background: #222;
-    border: 1px solid #ffa500;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 0 auto;
-}
-
-.elite-health-fill {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #ffa500, #ff0);
-    transition: width 0.2s ease;
-    border-radius: 5px;
-}
-
-/* Special Bar */
-.special-bar {
-    width: 80px;
-    height: 10px;
-    background: #333;
-    border: 1px solid #ff0;
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.special-fill {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, #ff0, #f80);
-    transition: width 0.3s ease;
-    border-radius: 5px;
-}
-
-/* Credits */
-.credits {
-    margin-top: 30px;
-    color: #666;
-    font-size: 0.9em;
-}
-
-/* Responsive */
-@media (max-width: 850px) {
-    #game-container {
-        width: 100vw;
-        height: 100vh;
-        border: none;
-        border-radius: 0;
-    }
+.hidden {
+    display: none !important;
 }
