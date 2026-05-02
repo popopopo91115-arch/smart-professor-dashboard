@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حرب الطيارات - Sky Warriors</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Main Menu -->
+        <div id="main-menu" class="overlay">
+            <div class="menu-content">
+                <h1 class="game-title">⚔️ حرب الطيارات ⚔️</h1>
+                <h2 class="game-subtitle">SKY WARRIORS</h2>
+                <div class="menu-buttons">
+                    <button id="start-btn" class="menu-btn">🎮 ابدأ اللعب</button>
+                    <button id="controls-btn" class="menu-btn">🕹️ التحكم</button>
+                    <button id="about-btn" class="menu-btn">ℹ️ حول اللعبة</button>
+                </div>
+                <div class="credits">تم التطوير بواسطة فريق Sky Warriors</div>
+            </div>
+        </div>
+
+        <!-- Controls Info -->
+        <div id="controls-menu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>🕹️ التحكم</h2>
+                <div class="controls-grid">
+                    <div class="control-item">
+                        <span class="key">↑ ↓ ← →</span>
+                        <span class="desc">تحريك الطائرة</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="key">SPACE</span>
+                        <span class="desc">إطلاق النار</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="key">Z</span>
+                        <span class="desc">سلاح خاص</span>
+                    </div>
+                    <div class="control-item">
+                        <span class="key">P</span>
+                        <span class="desc">إيقاف مؤقت</span>
+                    </div>
+                </div>
+                <button id="back-from-controls" class="menu-btn">🔙 رجوع</button>
+            </div>
+        </div>
+
+        <!-- About -->
+        <div id="about-menu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>ℹ️ حول اللعبة</h2>
+                <p class="about-text">
+                    لعبة حرب الطيارات هي لعبة أركيد كلاسيكية تتضمن نظام مراحل متقدم
+                    مع زعماء (Bosses) أقوياء في نهاية كل مرحلة. قم بتدمير الأعداء
+                    واجمع التحسينات لتصبح أقوى!
+                </p>
+                <h3>المميزات:</h3>
+                <ul class="features-list">
+                    <li>🎨 جرافيكس متقدم مع تأثيرات جسيمات</li>
+                    <li>👾 نظام بوسز متعدد المراحل</li>
+                    <li>⚡ تحسينات وأسلحة متنوعة</li>
+                    <li>🏆 نظام نقاط ومستويات</li>
+                    <li>💥 تأثيرات انفجار واقعية</li>
+                </ul>
+                <button id="back-from-about" class="menu-btn">🔙 رجوع</button>
+            </div>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over" class="overlay hidden">
+            <div class="menu-content">
+                <h2 class="game-over-title">💀 انتهت اللعبة 💀</h2>
+                <div id="final-score" class="final-score"></div>
+                <div id="final-level" class="final-level"></div>
+                <button id="restart-btn" class="menu-btn">🔄 إعادة اللعب</button>
+                <button id="menu-btn" class="menu-btn">🏠 القائمة الرئيسية</button>
+            </div>
+        </div>
+
+        <!-- Level Complete -->
+        <div id="level-complete" class="overlay hidden">
+            <div class="menu-content">
+                <h2 class="level-complete-title">🎉 مرحلة مكتملة! 🎉</h2>
+                <div id="level-score" class="final-score"></div>
+                <button id="next-level-btn" class="menu-btn">➡️ المرحلة التالية</button>
+            </div>
+        </div>
+
+        <!-- Pause -->
+        <div id="pause-menu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>⏸️ إيقاف مؤقت</h2>
+                <button id="resume-btn" class="menu-btn">▶️ استمرار</button>
+                <button id="quit-btn" class="menu-btn">🏠 القائمة الرئيسية</button>
+            </div>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud" class="hidden">
+            <div class="hud-left">
+                <div class="hud-item">
+                    <span class="hud-label">النقاط:</span>
+                    <span id="score" class="hud-value">0</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">المرحلة:</span>
+                    <span id="level" class="hud-value">1</span>
+                </div>
+            </div>
+            <div class="hud-center">
+                <div id="boss-health-container" class="hidden">
+                    <span class="boss-name" id="boss-name">BOSS</span>
+                    <div class="boss-health-bar">
+                        <div id="boss-health-fill" class="boss-health-fill"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hud-right">
+                <div class="hud-item">
+                    <span class="hud-label">❤️</span>
+                    <span id="lives" class="hud-value">3</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">⚡</span>
+                    <div class="special-bar">
+                        <div id="special-fill" class="special-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/enemies.js"></script>
+    <script src="js/bosses.js"></script>
+    <script src="js/powerups.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
