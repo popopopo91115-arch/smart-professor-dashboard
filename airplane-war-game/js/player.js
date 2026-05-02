@@ -44,11 +44,11 @@ class Player {
         this.height = 50;
         this.x = canvas.width / 2 - this.width / 2;
         this.y = canvas.height - 80;
-        this.speed = 5;
-        this.lives = 3;
+        this.speed = 6;
+        this.lives = 5;
         this.score = 0;
         this.bullets = [];
-        this.fireRate = 8;
+        this.fireRate = 6;
         this.fireTimer = 0;
         this.weaponLevel = 1;
         this.specialCharge = 0;
@@ -81,9 +81,9 @@ class Player {
         this.x = Utils.clamp(this.x + dx, 0, this.canvas.width - this.width);
         this.y = Utils.clamp(this.y + dy, 0, this.canvas.height - this.height);
 
-        // Shooting
+        // Auto-fire (always shooting)
         this.fireTimer++;
-        if ((Input.isPressed(' ') || Input.isPressed('Space')) && this.fireTimer >= this.fireRate) {
+        if (this.fireTimer >= this.fireRate) {
             this.shoot();
             this.fireTimer = 0;
         }
@@ -328,7 +328,7 @@ class Player {
     reset(canvas) {
         this.x = canvas.width / 2 - this.width / 2;
         this.y = canvas.height - 80;
-        this.lives = 3;
+        this.lives = 5;
         this.score = 0;
         this.bullets = [];
         this.weaponLevel = 1;

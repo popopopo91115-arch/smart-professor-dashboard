@@ -388,9 +388,9 @@ class EnemyWave {
         this.enemies = [];
         this.level = level;
         this.spawnTimer = 0;
-        this.spawnInterval = Math.max(30, 90 - level * 10);
+        this.spawnInterval = Math.max(20, 60 - level * 8);
         this.enemiesSpawned = 0;
-        this.maxEnemies = 10 + level * 5;
+        this.maxEnemies = 8 + level * 4;
         this.waveComplete = false;
     }
 
