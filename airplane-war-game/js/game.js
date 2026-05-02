@@ -7,7 +7,7 @@ class Game {
         this.canvas.width = 800;
         this.canvas.height = 600;
 
-        this.state = 'menu'; // menu, playing, paused, gameover, levelcomplete, bossintro
+        this.state = 'menu';
         this.level = 1;
         this.player = new Player(this.canvas);
         this.background = new ScrollingBackground(this.canvas);
@@ -18,40 +18,36 @@ class Game {
         this.bossActive = false;
         this.screenShake = { x: 0, y: 0 };
         this.shakeIntensity = 0;
-        this.wavePhase = 'enemies'; // enemies, boss
+        this.wavePhase = 'enemies';
         this.bossIntroTimer = 0;
         this.warningFlash = 0;
         this.comboCount = 0;
         this.comboTimer = 0;
         this.notifications = [];
+        this.eliteEnemy = null;
 
         this.setupUI();
         this.gameLoop();
     }
 
     setupUI() {
-        // Main menu
         document.getElementById('start-btn').onclick = () => this.startGame();
         document.getElementById('controls-btn').onclick = () => this.showScreen('controls-menu');
         document.getElementById('about-btn').onclick = () => this.showScreen('about-menu');
         document.getElementById('back-from-controls').onclick = () => this.showScreen('main-menu');
         document.getElementById('back-from-about').onclick = () => this.showScreen('main-menu');
 
-        // Game over
         document.getElementById('restart-btn').onclick = () => this.startGame();
         document.getElementById('menu-btn').onclick = () => this.showScreen('main-menu');
 
-        // Level complete
         document.getElementById('next-level-btn').onclick = () => this.nextLevel();
 
-        // Pause
         document.getElementById('resume-btn').onclick = () => this.resumeGame();
         document.getElementById('quit-btn').onclick = () => {
             this.state = 'menu';
             this.showScreen('main-menu');
         };
 
-        // Pause key
         window.addEventListener('keydown', (e) => {
             if (e.key === 'p' || e.key === 'P') {
                 if (this.state === 'playing') this.pauseGame();
@@ -79,12 +75,14 @@ class Game {
         this.particles.clear();
         this.powerups.clear();
         this.notifications = [];
+        this.eliteEnemy = null;
         this.startWave();
 
         this.showScreen(null);
         document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden'));
         document.getElementById('hud').classList.remove('hidden');
         document.getElementById('boss-health-container').classList.add('hidden');
+        document.getElementById('elite-health-container').classList.add('hidden');
     }
 
     startWave() {
@@ -92,6 +90,8 @@ class Game {
         this.boss = null;
         this.bossActive = false;
         this.wavePhase = 'enemies';
+        this.eliteEnemy = null;
+        document.getElementById('elite-health-container').classList.add('hidden');
     }
 
     nextLevel() {
@@ -102,7 +102,7 @@ class Game {
         document.querySelectorAll('.overlay').forEach(o => o.classList.add('hidden'));
         document.getElementById('hud').classList.remove('hidden');
         document.getElementById('boss-health-container').classList.add('hidden');
-        this.addNotification(`المرحلة ${this.level}`, '#0ff');
+        document.getElementById('elite-health-container').classList.add('hidden');
     }
 
     pauseGame() {
@@ -123,12 +123,14 @@ class Game {
         document.getElementById('final-level').textContent = `المرحلة: ${this.level}`;
         this.showScreen('game-over');
         document.getElementById('hud').classList.add('hidden');
+        document.getElementById('elite-health-container').classList.add('hidden');
     }
 
     levelComplete() {
         this.state = 'levelcomplete';
         document.getElementById('level-score').textContent = `النقاط: ${this.player.score}`;
         this.showScreen('level-complete');
+        document.getElementById('elite-health-container').classList.add('hidden');
     }
 
     addNotification(text, color = '#fff') {
@@ -147,18 +149,12 @@ class Game {
     }
 
     update() {
-        // Always update background
         this.background.update();
 
         if (this.state !== 'playing') return;
 
-        // Update player
         this.player.update();
-
-        // Update particles
         this.particles.update();
-
-        // Update powerups
         this.powerups.update(this.canvas);
         this.powerups.checkCollision(this.player, this.particles);
 
@@ -171,8 +167,8 @@ class Game {
         // Screen shake decay
         if (this.shakeIntensity > 0) {
             this.screenShake = this.particles.shakeScreen(this.shakeIntensity);
-            this.shakeIntensity *= 0.9;
-            if (this.shakeIntensity < 0.5) this.shakeIntensity = 0;
+            this.shakeIntensity *= 0.88;
+            if (this.shakeIntensity < 0.3) this.shakeIntensity = 0;
         } else {
             this.screenShake = { x: 0, y: 0 };
         }
@@ -193,8 +189,24 @@ class Game {
             this.updateBossPhase();
         }
 
-        // Update HUD
+        // Track elite enemy health bar
+        this.updateEliteHealthBar();
+
         this.updateHUD();
+    }
+
+    updateEliteHealthBar() {
+        const container = document.getElementById('elite-health-container');
+        if (this.wave && this.wave.eliteActive && this.wave.eliteActive.alive) {
+            this.eliteEnemy = this.wave.eliteActive;
+            container.classList.remove('hidden');
+            const fill = document.getElementById('elite-health-fill');
+            const percent = (this.eliteEnemy.health / this.eliteEnemy.maxHealth) * 100;
+            fill.style.width = `${percent}%`;
+        } else if (this.eliteEnemy) {
+            this.eliteEnemy = null;
+            container.classList.add('hidden');
+        }
     }
 
     updateEnemyPhase() {
@@ -228,13 +240,13 @@ class Game {
                 if (this.player.hit()) {
                     this.particles.explode(this.player.x + this.player.width / 2,
                         this.player.y + this.player.height / 2, 20, { color: '#0af' });
-                    this.shakeIntensity = 8;
+                    this.shakeIntensity = 10;
                     if (this.player.lives <= 0) {
                         this.gameOver();
                         return;
                     }
                 }
-                bullet.x = -100; // Remove bullet
+                bullet.x = -100;
             }
         }
 
@@ -244,7 +256,7 @@ class Game {
                 if (this.player.hit()) {
                     this.particles.explode(this.player.x + this.player.width / 2,
                         this.player.y + this.player.height / 2, 20, { color: '#0af' });
-                    this.shakeIntensity = 8;
+                    this.shakeIntensity = 10;
                     enemy.hit(99);
                     this.onEnemyDestroyed(enemy);
                     if (this.player.lives <= 0) {
@@ -255,7 +267,7 @@ class Game {
             }
         }
 
-        // Wave complete - start boss
+        // Wave complete - start boss (silent transition, no level message)
         if (this.wave.waveComplete) {
             this.wavePhase = 'bossintro';
             this.bossIntroTimer = 0;
@@ -287,15 +299,13 @@ class Game {
         const bossFinished = this.boss.update(playerCX, playerCY);
 
         if (bossFinished) {
-            // Boss destroyed
             this.player.score += this.boss.score;
-            this.shakeIntensity = 15;
+            this.shakeIntensity = 18;
             this.particles.explode(this.boss.x, this.boss.y + this.boss.height / 2, 80, {
                 speed: 8,
                 color: this.boss.color1
             });
-            
-            // Drop multiple powerups
+
             this.powerups.spawnGuaranteed(this.boss.x - 20, this.boss.y, 'weapon');
             this.powerups.spawnGuaranteed(this.boss.x + 20, this.boss.y, 'health');
             this.powerups.spawnGuaranteed(this.boss.x, this.boss.y + 20, 'special');
@@ -303,7 +313,7 @@ class Game {
             this.boss = null;
             this.bossActive = false;
             document.getElementById('boss-health-container').classList.add('hidden');
-            
+
             setTimeout(() => this.levelComplete(), 1500);
             return;
         }
@@ -322,7 +332,7 @@ class Game {
                     this.particles.bossDamage(bullet.x, bullet.y);
                     this.player.addSpecialCharge(2);
                     if (destroyed) {
-                        this.shakeIntensity = 10;
+                        this.shakeIntensity = 12;
                     }
                     return false;
                 }
@@ -337,7 +347,7 @@ class Game {
                     if (this.player.hit()) {
                         this.particles.explode(this.player.x + this.player.width / 2,
                             this.player.y + this.player.height / 2, 20, { color: '#0af' });
-                        this.shakeIntensity = 8;
+                        this.shakeIntensity = 10;
                         if (this.player.lives <= 0) {
                             this.gameOver();
                             return;
@@ -358,10 +368,18 @@ class Game {
     onEnemyDestroyed(enemy) {
         const cx = enemy.x + enemy.width / 2;
         const cy = enemy.y + enemy.height / 2;
-        
+
         this.particles.explode(cx, cy, 25);
-        this.shakeIntensity = 3;
-        
+
+        // Stronger screen shake for elite enemies
+        if (enemy.type === 'elite') {
+            this.shakeIntensity = 12;
+            this.particles.explode(cx, cy, 40, { speed: 6, color: '#ffa500' });
+            this.addNotification('ELITE DESTROYED! +1500', '#ffa500');
+        } else {
+            this.shakeIntensity = 3;
+        }
+
         // Combo system
         this.comboCount++;
         this.comboTimer = 60;
@@ -374,7 +392,6 @@ class Game {
             this.addNotification(`COMBO x${this.comboCount}! +${score}`, '#ff0');
         }
 
-        // Power-up drops
         this.powerups.spawn(cx, cy);
     }
 
@@ -382,7 +399,7 @@ class Game {
         document.getElementById('score').textContent = this.player.score.toLocaleString();
         document.getElementById('level').textContent = this.level;
         document.getElementById('lives').textContent = this.player.lives;
-        
+
         const specialFill = document.getElementById('special-fill');
         specialFill.style.width = `${(this.player.specialCharge / this.player.maxSpecialCharge) * 100}%`;
     }
@@ -391,16 +408,13 @@ class Game {
         const ctx = this.ctx;
         ctx.save();
 
-        // Apply screen shake
         ctx.translate(this.screenShake.x, this.screenShake.y);
 
-        // Draw background
         this.background.draw(ctx);
 
         if (this.state === 'playing' || this.state === 'paused') {
-            // Draw game objects
             this.powerups.draw(ctx);
-            
+
             if (this.wave && this.wavePhase === 'enemies') {
                 this.wave.draw(ctx);
             }
@@ -417,7 +431,6 @@ class Game {
                 this.drawBossWarning(ctx);
             }
 
-            // Notifications
             this.drawNotifications(ctx);
 
             // Thruster particles
@@ -437,8 +450,7 @@ class Game {
         const alpha = Math.abs(Math.sin(this.warningFlash * 2));
         ctx.save();
         ctx.globalAlpha = alpha;
-        
-        // Red vignette
+
         const gradient = ctx.createRadialGradient(
             this.canvas.width / 2, this.canvas.height / 2, 100,
             this.canvas.width / 2, this.canvas.height / 2, 400
@@ -448,7 +460,6 @@ class Game {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Warning text
         ctx.fillStyle = '#f00';
         ctx.font = 'bold 40px Arial';
         ctx.textAlign = 'center';
@@ -457,7 +468,7 @@ class Game {
         ctx.fillText('⚠️ WARNING ⚠️', this.canvas.width / 2, this.canvas.height / 2 - 20);
         ctx.font = 'bold 24px Arial';
         ctx.fillText('BOSS APPROACHING', this.canvas.width / 2, this.canvas.height / 2 + 20);
-        
+
         ctx.restore();
     }
 

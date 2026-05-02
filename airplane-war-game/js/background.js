@@ -1,4 +1,4 @@
-// New York City skyline background - scrolling cityscape
+// New York City skyline background with environmental life
 
 class Star {
     constructor(canvas) {
@@ -28,13 +28,88 @@ class Star {
     }
 }
 
+class Bird {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.reset();
+        this.x = Utils.random(0, canvas.width);
+    }
+
+    reset() {
+        this.x = this.canvas.width + Utils.random(10, 100);
+        this.y = Utils.random(50, this.canvas.height * 0.4);
+        this.speed = Utils.random(1.2, 2.5);
+        this.wingPhase = Utils.random(0, Math.PI * 2);
+        this.wingSpeed = Utils.random(0.1, 0.2);
+        this.size = Utils.random(3, 6);
+        this.wobble = Utils.random(0, Math.PI * 2);
+    }
+
+    update() {
+        this.x -= this.speed;
+        this.wingPhase += this.wingSpeed;
+        this.wobble += 0.02;
+        if (this.x < -20) this.reset();
+    }
+
+    draw(ctx) {
+        const wingY = Math.sin(this.wingPhase) * this.size * 0.8;
+        const yOffset = Math.sin(this.wobble) * 2;
+        const y = this.y + yOffset;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(40, 40, 60, 0.7)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(this.x - this.size, y + wingY);
+        ctx.quadraticCurveTo(this.x, y - Math.abs(wingY) * 0.3, this.x + this.size, y + wingY);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
+class WaterRipple {
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.reset();
+    }
+
+    reset() {
+        this.x = Utils.random(0, this.canvas.width);
+        this.y = this.canvas.height - Utils.random(2, 15);
+        this.radius = 0;
+        this.maxRadius = Utils.random(8, 25);
+        this.speed = Utils.random(0.2, 0.5);
+        this.alpha = Utils.random(0.1, 0.3);
+    }
+
+    update() {
+        this.radius += this.speed;
+        this.alpha *= 0.995;
+        if (this.radius >= this.maxRadius || this.alpha < 0.01) {
+            this.reset();
+        }
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.alpha * (1 - this.radius / this.maxRadius);
+        ctx.strokeStyle = '#4488aa';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.ellipse(this.x, this.y, this.radius, this.radius * 0.3, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    }
+}
+
 class Building {
     constructor(canvas, x, width, height, layer) {
         this.canvas = canvas;
         this.x = x;
         this.baseWidth = width;
         this.baseHeight = height;
-        this.layer = layer; // 0 = far, 1 = mid, 2 = near
+        this.layer = layer;
         this.y = canvas.height - height;
         this.windows = [];
         this.color = this.getLayerColor();
@@ -63,9 +138,12 @@ class Building {
                     this.windows.push({
                         rx: c * 10 + 4,
                         ry: r * 15 + 8,
-                        lit: Math.random() > 0.4,
+                        lit: Math.random() > 0.3,
                         flicker: Utils.random(0, Math.PI * 2),
-                        color: this.randomWindowColor()
+                        flickerSpeed: Utils.random(0.001, 0.005),
+                        color: this.randomWindowColor(),
+                        turnOff: Math.random() > 0.95,
+                        turnOffTimer: Utils.random(0, 500)
                     });
                 }
             }
@@ -73,7 +151,7 @@ class Building {
     }
 
     randomWindowColor() {
-        const colors = ['#ffdd44', '#ffcc33', '#ffffaa', '#aaddff', '#ffffff', '#ff9944'];
+        const colors = ['#ffdd44', '#ffcc33', '#ffffaa', '#aaddff', '#ffffff', '#ff9944', '#ffaa22'];
         return colors[Utils.randomInt(0, colors.length - 1)];
     }
 
@@ -88,16 +166,25 @@ class Building {
             this.hasAntenna = Math.random() > 0.7;
             this.hasSpire = Math.random() > 0.8;
         }
+
+        // Flickering window lights
+        this.windows.forEach(w => {
+            if (w.turnOff) {
+                w.turnOffTimer--;
+                if (w.turnOffTimer <= 0) {
+                    w.lit = !w.lit;
+                    w.turnOffTimer = Utils.random(200, 800);
+                }
+            }
+        });
     }
 
     draw(ctx) {
-        // Building body
         ctx.fillStyle = this.color.base;
         ctx.fillRect(this.x, this.y, this.baseWidth, this.baseHeight);
 
-        // Building top shape variations
-        ctx.fillStyle = this.color.base;
         if (this.hasSpire) {
+            ctx.fillStyle = this.color.base;
             ctx.beginPath();
             ctx.moveTo(this.x + this.baseWidth * 0.3, this.y);
             ctx.lineTo(this.x + this.baseWidth * 0.5, this.y - 30);
@@ -105,7 +192,6 @@ class Building {
             ctx.fill();
         }
 
-        // Antenna
         if (this.hasAntenna) {
             ctx.strokeStyle = '#444';
             ctx.lineWidth = 2;
@@ -113,28 +199,35 @@ class Building {
             ctx.moveTo(this.x + this.baseWidth / 2, this.y);
             ctx.lineTo(this.x + this.baseWidth / 2, this.y - this.antennaHeight);
             ctx.stroke();
-            // Blinking light
             if (Math.sin(Date.now() * 0.003) > 0) {
                 ctx.fillStyle = '#f00';
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#f00';
                 ctx.beginPath();
                 ctx.arc(this.x + this.baseWidth / 2, this.y - this.antennaHeight, 2, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.shadowBlur = 0;
             }
         }
 
-        // Windows
+        // Windows with enhanced flickering
         this.windows.forEach(w => {
             if (w.lit) {
-                const flicker = Math.sin(w.flicker + Date.now() * 0.001) * 0.2 + 0.8;
-                ctx.globalAlpha = flicker * (this.layer === 0 ? 0.4 : this.layer === 1 ? 0.6 : 0.8);
+                const flicker = Math.sin(w.flicker + Date.now() * w.flickerSpeed) * 0.25 + 0.75;
+                const layerAlpha = this.layer === 0 ? 0.4 : this.layer === 1 ? 0.6 : 0.85;
+                ctx.globalAlpha = flicker * layerAlpha;
                 ctx.fillStyle = w.color;
                 ctx.fillRect(this.x + w.rx, this.y + w.ry, 5, 8);
+                // Window glow
+                if (this.layer === 2 && Math.random() > 0.98) {
+                    ctx.globalAlpha = 0.1;
+                    ctx.fillRect(this.x + w.rx - 1, this.y + w.ry - 1, 7, 10);
+                }
                 ctx.globalAlpha = 1;
             }
         });
 
-        // Edge highlights
-        ctx.strokeStyle = `rgba(100, 150, 255, ${0.05 + this.layer * 0.03})`;
+        ctx.strokeStyle = `rgba(100, 150, 255, ${0.03 + this.layer * 0.02})`;
         ctx.lineWidth = 1;
         ctx.strokeRect(this.x, this.y, this.baseWidth, this.baseHeight);
     }
@@ -186,24 +279,30 @@ class ScrollingBackground {
         this.stars = [];
         this.buildings = [];
         this.clouds = [];
+        this.birds = [];
+        this.ripples = [];
         this.time = 0;
 
-        // Create stars
         for (let i = 0; i < 60; i++) {
             this.stars.push(new Star(canvas));
         }
 
-        // Create buildings in 3 layers (parallax)
         this.generateBuildings();
 
-        // Create clouds
         for (let i = 0; i < 5; i++) {
             this.clouds.push(new Cloud(canvas));
+        }
+
+        // Environmental life
+        for (let i = 0; i < 6; i++) {
+            this.birds.push(new Bird(canvas));
+        }
+        for (let i = 0; i < 8; i++) {
+            this.ripples.push(new WaterRipple(canvas));
         }
     }
 
     generateBuildings() {
-        // Far layer (small, dark)
         let x = 0;
         while (x < this.canvas.width + 100) {
             const w = Utils.random(20, 50);
@@ -211,8 +310,6 @@ class ScrollingBackground {
             this.buildings.push(new Building(this.canvas, x, w, h, 0));
             x += w + Utils.random(2, 8);
         }
-
-        // Mid layer
         x = 0;
         while (x < this.canvas.width + 100) {
             const w = Utils.random(30, 70);
@@ -220,8 +317,6 @@ class ScrollingBackground {
             this.buildings.push(new Building(this.canvas, x, w, h, 1));
             x += w + Utils.random(5, 20);
         }
-
-        // Near layer (large, detailed)
         x = 0;
         while (x < this.canvas.width + 100) {
             const w = Utils.random(40, 90);
@@ -236,10 +331,12 @@ class ScrollingBackground {
         this.stars.forEach(s => s.update());
         this.buildings.forEach(b => b.update());
         this.clouds.forEach(c => c.update());
+        this.birds.forEach(b => b.update());
+        this.ripples.forEach(r => r.update());
     }
 
     draw(ctx) {
-        // Night sky gradient (NYC at night)
+        // Night sky
         const gradient = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
         gradient.addColorStop(0, '#020118');
         gradient.addColorStop(0.2, '#0a0530');
@@ -249,25 +346,19 @@ class ScrollingBackground {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Moon
         this.drawMoon(ctx);
-
-        // Stars
         this.stars.forEach(s => s.draw(ctx));
-
-        // Clouds
         this.clouds.forEach(c => c.draw(ctx));
+        this.birds.forEach(b => b.draw(ctx));
 
-        // Buildings by layer (far to near)
         const sorted = [...this.buildings].sort((a, b) => a.layer - b.layer);
         sorted.forEach(b => b.draw(ctx));
 
-        // City glow at horizon
         this.drawCityGlow(ctx);
+        this.ripples.forEach(r => r.draw(ctx));
 
-        // NYC label (subtle)
         ctx.save();
-        ctx.globalAlpha = 0.15;
+        ctx.globalAlpha = 0.12;
         ctx.fillStyle = '#aaccff';
         ctx.font = '10px Arial';
         ctx.fillText('NEW YORK CITY', 10, this.canvas.height - 10);
@@ -279,7 +370,6 @@ class ScrollingBackground {
         const moonY = 60;
         const moonRadius = 25;
 
-        // Moon glow
         const glow = ctx.createRadialGradient(moonX, moonY, moonRadius * 0.5, moonX, moonY, moonRadius * 3);
         glow.addColorStop(0, 'rgba(200, 220, 255, 0.15)');
         glow.addColorStop(1, 'transparent');
@@ -288,13 +378,11 @@ class ScrollingBackground {
         ctx.arc(moonX, moonY, moonRadius * 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Moon body
         ctx.fillStyle = '#ddeeff';
         ctx.beginPath();
         ctx.arc(moonX, moonY, moonRadius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Moon craters
         ctx.fillStyle = 'rgba(150, 170, 200, 0.3)';
         ctx.beginPath();
         ctx.arc(moonX - 8, moonY - 5, 6, 0, Math.PI * 2);
@@ -315,7 +403,6 @@ class ScrollingBackground {
         ctx.fillStyle = glowGradient;
         ctx.fillRect(0, this.canvas.height - 100, this.canvas.width, 100);
 
-        // Light pollution haze
         const haze = ctx.createLinearGradient(0, this.canvas.height * 0.5, 0, this.canvas.height);
         haze.addColorStop(0, 'transparent');
         haze.addColorStop(1, 'rgba(80, 60, 120, 0.08)');

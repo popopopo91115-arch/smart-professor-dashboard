@@ -18,17 +18,28 @@ class Bullet {
 
     draw(ctx) {
         ctx.save();
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
-        
-        // Bullet body
+
+        // Outer bloom
+        ctx.globalAlpha = 0.2;
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
-        
-        // Bullet glow
+        ctx.fillRect(this.x - this.width * 1.5, this.y - 3, this.width * 3, this.height + 6);
+
+        // Mid glow
         ctx.globalAlpha = 0.5;
         ctx.fillRect(this.x - this.width, this.y - 2, this.width * 2, this.height + 4);
-        
+
+        // Bullet body
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x - this.width / 2, this.y, this.width, this.height);
+
+        // Hot core
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = 0.8;
+        ctx.fillRect(this.x - this.width / 4, this.y + 1, this.width / 2, this.height - 2);
+
         ctx.restore();
     }
 
